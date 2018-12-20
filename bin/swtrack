@@ -10,8 +10,9 @@ def add_src_to_syspath():
 
 from datetime import datetime
 add_src_to_syspath()
-from swtrack.base import SchemaBase
-from swtrack.schema2 import Schema2
+
+from swtrack.swinstall_stack.base import SchemaBase
+from swtrack.swinstall_stack.schema2 import Schema2
 
 import logging
 #logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')

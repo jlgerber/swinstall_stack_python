@@ -5,7 +5,7 @@ import os
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
-from swtrack.schema2 import Schema2
+from swtrack.swinstall_stack.schema2 import Schema2
 from swtrack.swinstallfile import SwinstallFile
 from swtrack.utils import datetime_from_str
 
