@@ -10,11 +10,27 @@ class SchemaBase(object):
         """Register a schema class with the registry, which is used
         to instantiate the appropriate schema version, supporting multiple
         schema generations.
+
+        :param schema: class to register. This classmethod uses the subclass's
+                       schma_version class variable as the key in the registry.
+        :type schema: SchemaBase subclass
         """
         cls.registry[schema.schema_version] = schema
 
     @classmethod
     def parse(cls, swinstall_stack):
+        """Given an swinstall stack, parse the stack to determine the schema version
+        and invoke the approprate subclass parsing method, returning an initialized
+        subclass of SchemaBase.
+
+        :param swinstall_stack: fullpath to swinstall_stack
+        :type swinstall_stack: str
+
+        :returns: SchemaBase subclass instance
+        :rtype: SchemaBase subclass
+
+        :raises: ValueError if unable to identify schema version
+        """
         tree = ET.parse(swinstall_stack)
         root = tree.getroot()
         schema_version = root.attrib.get("schema")
@@ -52,7 +68,9 @@ class SchemaBase(object):
 
         :param root: root xml element
         :type root: ElementTree.Node
+
         :returns: None
+
         :raises: ValueError
         """
         root_schema_version = root.attrib.get("schema")
@@ -64,7 +82,7 @@ class SchemaBase(object):
     def swinstall_stack(self):
         """The full path to the swinstall_stack file.
 
-        :return: full path to swinstall_stack file
+        :returns: full path to swinstall_stack file
         :rtype: str
         """
         return self._swinstall_stack
@@ -73,7 +91,7 @@ class SchemaBase(object):
     def root(self):
         """The root Element of the swinstall_stack document.
 
-        :return: root element of swinstall_stack document
+        :returns: root element of swinstall_stack document
         :rtype: ElementTree.Element
         """
         return self._root
@@ -86,7 +104,7 @@ class SchemaBase(object):
     def next_version(self):
         """Return the next available version number after the current one.
 
-        :return: next version number after the current one.
+        :returns: next version number after the current one.
         :rtype: int
         """
         raise NotImplementedError()
@@ -94,7 +112,7 @@ class SchemaBase(object):
     def current_version(self):
         """Return the current version number.
 
-        :return: Current version number
+        :returns: Current version number
         :rtype: int
         """
         raise NotImplementedError()
@@ -116,8 +134,10 @@ class SchemaBase(object):
                         whose datetime is less than or equal to the supplied *date_time*
                         parameter.
         :type date_time: datetime instance
-        :return: filepath to versioned file
+
+        :returns: filepath to versioned file
         :rtype: str
+
         :raises: KeyError - If date_time is invalid
         """
         raise NotImplementedError()
@@ -126,8 +146,11 @@ class SchemaBase(object):
         """Insert a new element with the supplied properties.
 
         :param hash: hash of the file contents that the element wraps
-        :param datetime: (datetime) that the new element was created
-        :param revision: (str) optional revision id from VCS.
+        :type hash: str
+        :param datetime: that the new element was created
+        :type datetime: datetime
+        :param revision: optional revision id from VCS.
+        :type revision: str
         """
         raise NotImplementedError()
 
