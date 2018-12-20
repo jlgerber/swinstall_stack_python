@@ -6,9 +6,9 @@ from .constants import (DATETIME_FORMAT, ELEM)
 class SwinstallFile(object):
     """Class which tracks metadata associated with an swinstall."""
 
-    def __init__(self, root, action, version, datetime, hash, revision=None):
+    def __init__(self, path, action, version, datetime, hash, revision=None):
         """Initialize an instance of SwinstallFile with metadata
-        :param root: (ElementTree.Element) instance of root xml node
+        :param path: (ElementTree.Element) instance of root xml node
         :param action: (str) The action performed by the entry (install|rollback)
         :param version: (str) The version number of the entry in swinstall stack
         :param datetime: (datetime) the time at which the tracked action occured.
@@ -16,7 +16,7 @@ class SwinstallFile(object):
                      of the contents of the file that the entry tracks
         :param revision: (str) an optional revision id of the tracked file in SCM
         """
-        self._path = os.path.dirname(root.attrib.get("path"))
+        self._path = path#os.path.dirname(root.attrib.get("path"))
         self._action = action
         self._version = int(version)
         self._datetime = datetime
@@ -77,7 +77,11 @@ class SwinstallFile(object):
         return os.path.join(dirname,"{}_{}".format(basename, self.datetime))
 
     def __eq__(self, other):
-        if self.hash == other.hash:
+        if self.versionless_path == other.versionless_path and \
+        self.version == other.version and \
+        self.datetime == other.datetime and \
+        self.hash == other.hash and \
+        self.revision == other.revision :
             return True
         return False
 

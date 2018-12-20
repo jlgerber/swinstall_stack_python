@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stack_history path="/Users/jonathangerber/src/python/swinstall_proposal/examples/bak/packages.xml/packages.xml_swinstall_stack" schema="2">
-   <elt action="install" datetime="20181218-195206" hash="dfee80e1bc72c77beee86da9bbcb6cc9" version="11"/>
-   <elt action="install" datetime="20181218-191633" hash="4f3ad4ac166d6ac4058e7cc4130d53b1" version="10"/>
-   <elt action="install" datetime="20181218-191612" hash="c80734c8b21a7633b2fa81dd4c47818d" version="9"/>
-   <elt action="rollback" datetime="20181218-191330" hash="99b1a5b2105bd689fc4178640b32936b" version="6"/>
-   <elt action="rollback" datetime="20181218-191316" hash="89a9e1051abc9bba02c58f83efa4ff85" version="7"/>
-   <elt action="install" datetime="20181218-191209" hash="4d3361a3e4649f8e59d7380b641c5484" version="8"/>
-   <elt action="install" datetime="20181218-185600" hash="89a9e1051abc9bba02c58f83efa4ff85" version="7"/>
-   <elt action="install" datetime="20181218-185553" hash="99b1a5b2105bd689fc4178640b32936b" version="6"/>
-   <elt action="install" datetime="20181218-185056" hash="a234154b4gcd445d4799" version="5"/>
-   <elt action="install" datetime="20181218-185046" hash="a234154b4gcd445d4799" version="4"/>
-   <elt action="rollback" datetime="20181218-150209" hash="h334134514ccd443d3" revision="r575055" version="2"/>
+   <elt action="install" datetime="20181219-100757" hash="e0b7d56a8e32067a4e17208f8e22779c" version="4"/>
+   <elt action="rollback" datetime="20181219-090233" hash="294fc86579b14b7d39" version="1"/>
+   <elt action="rollback" datetime="20181219-090233" hash="c94f6266789a483a43" version="2"/>
    <elt action="install" datetime="20180702-144204" hash="194f835569a79ba433" version="3"/>
    <elt action="install" datetime="20180101-103813" hash="c94f6266789a483a43" version="2"/>
    <elt action="install" datetime="20171106-104603" hash="294fc86579b14b7d39" version="1"/>

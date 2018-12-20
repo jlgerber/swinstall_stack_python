@@ -5,9 +5,7 @@ def add_src_to_syspath():
     import sys
     from os.path import realpath as real
     from os.path import dirname as cdu
-    from os.path import join as joinpath
-    pdir = cdu(cdu(real(__file__)))
-    api_dir = joinpath(pdir, "src")
+    api_dir = cdu(cdu(real(__file__)))
     sys.path.append(api_dir)
 
 from datetime import datetime
@@ -15,15 +13,38 @@ add_src_to_syspath()
 from swtrack.base import SchemaBase
 from swtrack.schema2 import Schema2
 
+import logging
+#logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
+#logging.getLogger().setLevel(logging.DEBUG)
+
+LOG_LEVEL = logging.DEBUG
+LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
+from colorlog import ColoredFormatter
+logging.getLogger().setLevel(LOG_LEVEL)
+formatter = ColoredFormatter(LOGFORMAT,log_colors={
+                'DEBUG':    'cyan',
+                'INFO':     'green',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'red',
+        })
+stream = logging.StreamHandler()
+stream.setLevel(LOG_LEVEL)
+stream.setFormatter(formatter)
+log = logging.getLogger()
+log.setLevel(LOG_LEVEL)
+log.addHandler(stream)
+
+
 # Register schemas
-SchemaBase.register(Schema2)
+#SchemaBase.register(Schema2)
 
 def gen_random_hash():
     import random
     hash = random.getrandbits(128)
     return "%032x" % hash
 
-usage = "usage: swtracket.py <install|rollback>"
+usage = "usage: swtrack <install|rollback>"
 def parse(action):
     schema2 = SchemaBase.parse('/Users/jonathangerber/src/python/swinstall_proposal/examples/bak/packages.xml/packages.xml_swinstall_stack')
     if action == "install":
