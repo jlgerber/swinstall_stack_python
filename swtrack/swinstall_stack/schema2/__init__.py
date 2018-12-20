@@ -1,4 +1,5 @@
 
+__all__ = ("Schema2",)
 
 from datetime import datetime
 import logging

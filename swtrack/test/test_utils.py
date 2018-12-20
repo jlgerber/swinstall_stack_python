@@ -4,13 +4,6 @@ import unittest
 import env
 from swtrack.utils import *
 
-"""
-testing the following:
-~~~~~~~~~~~~~~~~~~~~~~
-def datetime_from_str(datetime_str):
-def datetime_revision_from_str(datetime_str):
-def datetime_to_str(date_time):
-"""
 class UtilsTest(unittest.TestCase):
     def test_datetime_from_str(self):
         dt_str = "20180811-221113"

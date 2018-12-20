@@ -1,4 +1,6 @@
 
+__all__ = ("FileMetadata",)
+
 import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)

@@ -1,3 +1,5 @@
+__all__ = ("SchemaBase",)
+
 import os
 import xml.etree.ElementTree as ET
 from  ..constants import DEFAULT_SCHEMA
@@ -191,3 +193,6 @@ class SchemaBase(object):
         :type date_type: datetime instance
         """
         raise NotImplementedError()
+
+
+#class SchemaInterface(object):

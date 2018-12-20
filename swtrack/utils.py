@@ -1,7 +1,9 @@
+__all__ = ("datetime_from_str", "datetime_revision_from_str", "datetime_to_str")
+
 from datetime import datetime
 from .constants import DATETIME_FORMAT
 import logging
-__all__ = ("datetime_from_str", "datetime_revision_from_str", "datetime_to_str")
+
 
 log = logging.getLogger(__name__)
 
