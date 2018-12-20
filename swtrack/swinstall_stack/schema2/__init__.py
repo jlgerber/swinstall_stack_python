@@ -4,7 +4,7 @@ __all__ = ("Schema2",)
 from datetime import datetime
 import logging
 import os
-from xml.dom import minidom
+
 import xml.etree.ElementTree as ET
 
 from ..base import SchemaBase, SchemaInterface
@@ -73,6 +73,11 @@ class Schema2(SchemaBase, SchemaInterface):
                 return FileMetadata(self.root_dirname(), **child.attrib)
         raise KeyError("no version: {} has been published",format(version))
 
+
+    def _insert_element_into_root(self, element):
+        self.root.insert(0, element)
+        self._save()
+
     def insert_element(self, hash, date_time=datetime.now(),  revision=None):
         """Generate a new element from a given date_time object.
 
@@ -86,7 +91,7 @@ class Schema2(SchemaBase, SchemaInterface):
         """
         next_version = self.next_version()
         next = FileMetadata(self.root, "install", next_version, date_time, hash, revision)
-        self._insert_element(next.element())
+        self._insert_element_into_root(next.element())
 
     def rollback_element(self, date_time=datetime.now()):
         """A rollback sets the new current version to old current version - 1
@@ -96,16 +101,8 @@ class Schema2(SchemaBase, SchemaInterface):
         new_version = self.current_version() - 1
         installfile = self.version(new_version)
         rollback = FileMetadata(os.path.dirname(self.root.attrib.get("path")), "rollback", new_version, date_time, installfile.hash, installfile.revision)
-        self._insert_element(rollback.element())
+        self._insert_element_into_root(rollback.element())
 
-    def _insert_element(self, element):
-        self.root.insert(0, element)
-        xmlstr = minidom.parseString(ET.tostring(self.root)).toprettyxml(indent="   ", encoding='UTF-8')
-        xmlstr = os.linesep.join([s for s in xmlstr.splitlines() if s.strip()])
-        output = self.root.attrib.get("path")
-        log.debug("outputing to {}".format(output))
-        with open(output, "w") as f:
-            f.write(xmlstr)
 
     def file_on(self, date_time):
         """Given a datetime instance, find the most recent action which is less than or

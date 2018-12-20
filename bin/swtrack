@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 
 def add_src_to_syspath():
     """helper function to update syspath"""
@@ -13,6 +14,7 @@ add_src_to_syspath()
 
 from swtrack.swinstall_stack.base import SchemaBase
 from swtrack.swinstall_stack.schema2 import Schema2
+from swtrack.swinstall_stack.schema1 import Schema1
 
 import logging
 #logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
@@ -47,18 +49,29 @@ def gen_random_hash():
 
 usage = "usage: swtrack <install|rollback>"
 def parse(action, schema="schema2"):
-    schema2 = SchemaBase.parse('/Users/jonathangerber/src/python/swinstall_proposal/examples/{}/packages.xml'.format(schema))
+    schema = SchemaBase.parse(path_to_swinstalled_file(schema))
     if action == "install":
-        schema2.insert_element(gen_random_hash())
+        if schema.schema_version == "1":
+            schema.insert_element(datetime.now())
+        elif schema.schema_version == "2":
+            schema.insert_element(hash=gen_random_hash())
     elif action == "rollback":
-        schema2.rollback_element()
+        schema.rollback_element(datetime.now())
     else:
         print usage
 
+def path_to_swinstalled_file(schema="schema2"):
+    root = os.path.dirname(
+        os.path.dirname(
+            os.path.realpath(__file__)
+        )
+    )
+    return os.path.join(root, "examples", schema, "packages.xml")
 
 if __name__ == "__main__":
     import sys
     if len(sys.argv) < 2:
         print usage
     else:
-        parse(sys.argv[1])
+        schema = sys.argv[2] if len(sys.argv) > 2 else "schema2"
+        parse(sys.argv[1], schema)

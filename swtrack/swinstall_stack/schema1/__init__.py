@@ -120,17 +120,24 @@ class Schema1(SchemaBase, SchemaInterface):
         return os.path.join(self.root_dirname(),
                 "{}_{}{}".format(self.versionless_filename(), date_time, revision))
 
-    def insert_element(self, hash, datetime, revision=None):
+    def _insert_element_into_root(self, element):
+        for child in self.root:
+            if child.attrib.get("is_current") == "True":
+                child.attrib['is_current'] = "False"
+        self.root.append(element)
+        log.debug("Added child: {} to root: {}".format(element.attrib, self.root.attrib))
+        self._save()
+
+    def insert_element(self, date_time, revision=None):
         """Insert a new element with the supplied properties.
 
-        :param hash: hash of the file contents that the element wraps
-        :type hash: str
-        :param datetime: that the new element was created
-        :type datetime: datetime
+        :param date_time: that the new element was created
+        :type date_time: datetime
         :param revision: optional revision id from VCS.
         :type revision: str
         """
-        raise NotImplementedError()
+        next = FileMetadata(self.root, "True", date_time, revision)
+        self._insert_element_into_root(next.element())
 
     def rollback_element(self, date_time):
         """Rollback the current entry to point at the previous entry.
@@ -138,7 +145,17 @@ class Schema1(SchemaBase, SchemaInterface):
         :param date_time: The datetime at which the rollback occured
         :type date_type: datetime instance
         """
-        raise NotImplementedError()
-
+        # iterate through elements, looking for current
+        # set current to false
+        # set current element index -1 to true
+        # save
+        cnt = 0
+        for elt in self.root:
+            if elt.attrib.get("is_current") == "True":
+                elt.attrib["is_current"] = "False"
+                list(self.root)[cnt-1].attrib["is_current"] = "True"
+                break
+            cnt +=1
+        self._save()
 
 SchemaBase.register(Schema1)

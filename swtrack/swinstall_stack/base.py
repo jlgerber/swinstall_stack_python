@@ -1,8 +1,12 @@
 __all__ = ("SchemaBase", "SchemaInterface")
 
+import logging
 import os
 import xml.etree.ElementTree as ET
+from xml.dom import minidom
 from  ..constants import DEFAULT_SCHEMA
+
+log = logging.getLogger(__name__)
 
 class SchemaBase(object):
     """Base class providing schema registry, as well as callable methods.
@@ -95,6 +99,14 @@ class SchemaBase(object):
         :rtype: str
         """
         return os.path.basename(self.root_dirname())
+
+    def _save(self):
+        xmlstr = minidom.parseString(ET.tostring(self.root)).toprettyxml(indent="   ", encoding='UTF-8')
+        xmlstr = os.linesep.join([s for s in xmlstr.splitlines() if s.strip()])
+        output = self.root.attrib.get("path")
+        log.debug("outputing to {}".format(output))
+        with open(output, "w") as f:
+            f.write(xmlstr)
 
     def _validate_schema_version(self, root):
         """Validate the schema version of the calling class against the schema version
