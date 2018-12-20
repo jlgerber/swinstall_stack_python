@@ -19,10 +19,12 @@ STACK='''<?xml version="1.0" encoding="UTF-8"?>
 
 class Schema2Test(unittest.TestCase):
     def setUp(self):
-        tmpfile = tempfile.mkstemp(text=True)
-        # dont bother with lower level file handle
-        os.close(tmpfile[0])
-        self.swinstall_stack = tmpfile[1]
+        tmpdir = tempfile.mkdtemp()
+        self.versionless_file = os.path.join(tmpdir, "packages.xml")
+        self.fullpath = os.path.join(tmpdir, "bak", "packages.xml")
+        os.makedirs(self.fullpath)
+        self.swinstall_stack = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
+
         with open(self.swinstall_stack,'w') as fh:
             fh.write(STACK)
 
@@ -32,7 +34,12 @@ class Schema2Test(unittest.TestCase):
 
     def tearDown(self):
         os.remove(self.swinstall_stack)
+        os.rmdir(self.fullpath)
         del self.schema
+
+    def test_parse(self):
+        # we assert that this will not raise an exception
+        Schema2.parse(self.versionless_file)
 
     def test_current(self):
         current = self.schema.current()

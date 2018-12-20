@@ -47,7 +47,7 @@ def gen_random_hash():
 
 usage = "usage: swtrack <install|rollback>"
 def parse(action, schema="schema2"):
-    schema2 = SchemaBase.parse('/Users/jonathangerber/src/python/swinstall_proposal/examples/{}/bak/packages.xml/packages.xml_swinstall_stack'.format(schema))
+    schema2 = SchemaBase.parse('/Users/jonathangerber/src/python/swinstall_proposal/examples/{}/packages.xml'.format(schema))
     if action == "install":
         schema2.insert_element(gen_random_hash())
     elif action == "rollback":

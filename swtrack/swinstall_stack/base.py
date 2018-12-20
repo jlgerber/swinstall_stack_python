@@ -17,21 +17,38 @@ class SchemaBase(object):
         """
         cls.registry[schema.schema_version] = schema
 
+    @staticmethod
+    def _swinstall_stack_from_file(swinstalled_file):
+        """given the fullpath to an swinstalled file, construct the
+        full path to the relevant swinstall_stack
+
+        :param swinstalled_file: Full path to the swinstalled file
+        :type swinstalled_file: str
+
+        :returns: full path to swinstall_stack
+        :rtype: str
+        """
+        file_name = os.path.basename(swinstalled_file)
+        dir_name = os.path.dirname(swinstalled_file)
+        return os.path.join(dir_name, "bak", file_name, \
+                "{}_swinstall_stack".format(file_name))
+
     @classmethod
-    def parse(cls, swinstall_stack):
-        """Given an swinstall stack, parse the stack to determine the schema version
-        and invoke the approprate subclass parsing method, returning an initialized
+    def parse(cls, swinstalled_file):
+        """Given the full path to a versionless swinstalled file, locate the swinstall
+        stack and parse the stack to determine the schema version. then,
+        invoke the approprate subclass parsing method, returning an initialized
         subclass of SchemaBase.
 
-        :param swinstall_stack: fullpath to swinstall_stack
-        :type swinstall_stack: str
+        :param swinstalled_file: fullpath to swinstalled file
+        :type swinstalled_file: str
 
         :returns: SchemaBase subclass instance
         :rtype: SchemaBase subclass
 
         :raises: ValueError if unable to identify schema version
         """
-        tree = ET.parse(swinstall_stack)
+        tree = ET.parse(cls._swinstall_stack_from_file(swinstalled_file))
         root = tree.getroot()
         schema_version = root.attrib.get("schema")
 
