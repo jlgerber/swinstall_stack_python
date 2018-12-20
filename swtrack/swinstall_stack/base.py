@@ -1,10 +1,12 @@
-__all__ = ("SchemaBase",)
+__all__ = ("SchemaBase", "SchemaInterface")
 
 import os
 import xml.etree.ElementTree as ET
 from  ..constants import DEFAULT_SCHEMA
 
 class SchemaBase(object):
+    """Base class providing schema registry, as well as callable methods.
+    """
     schema_version = None
     registry = {}
 
@@ -128,33 +130,28 @@ class SchemaBase(object):
         """
         return self._root
 
+
+class SchemaInterface(object):
+    """abstract class providing minimum set of methods defining the schema interface"""
     def current(self):
         """Return metadata corresponding with the current file in the swinstall stack.
         """
         raise NotImplementedError()
 
-    def next_version(self):
-        """Return the next available version number after the current one.
-
-        :returns: next version number after the current one.
-        :rtype: int
-        """
-        raise NotImplementedError()
-
     def current_version(self):
-        """Return the current version number.
+        """Return the current version .
 
-        :returns: Current version number
-        :rtype: int
+        :returns: Current version
+        :rtype: cls._version_type
         """
         raise NotImplementedError()
 
     def version(self, version):
         """retrieve metadata for the swinstalled file entry with the supplied
-        version number.
+        version.
 
         :param version: version of interest
-        :type version: int
+        :type version: cls._version_type
         """
         raise NotImplementedError()
 
@@ -174,15 +171,8 @@ class SchemaBase(object):
         """
         raise NotImplementedError()
 
-    def insert_element(self, hash, datetime, revision=None):
-        """Insert a new element with the supplied properties.
-
-        :param hash: hash of the file contents that the element wraps
-        :type hash: str
-        :param datetime: that the new element was created
-        :type datetime: datetime
-        :param revision: optional revision id from VCS.
-        :type revision: str
+    def insert_element(self, *args, **kwargs):
+        """Insert a new element with the supplied properties
         """
         raise NotImplementedError()
 
@@ -195,4 +185,3 @@ class SchemaBase(object):
         raise NotImplementedError()
 
 
-#class SchemaInterface(object):

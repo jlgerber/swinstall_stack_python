@@ -7,14 +7,14 @@ import os
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
-from ..base import SchemaBase
+from ..base import SchemaBase, SchemaInterface
 from ...constants import (ELEM, DEFAULT_SCHEMA)
 from .file_metadata import FileMetadata
 from ...utils import (datetime_from_str, datetime_revision_from_str, datetime_to_str)
 
 log = logging.getLogger(__name__)
 
-class Schema1(SchemaBase):
+class Schema1(SchemaBase, SchemaInterface):
     schema_version = DEFAULT_SCHEMA
 
     _action = "action"
