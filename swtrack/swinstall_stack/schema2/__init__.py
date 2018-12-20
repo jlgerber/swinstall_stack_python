@@ -6,10 +6,10 @@ import os
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
-from .base import SchemaBase
-from ..constants import ELEM
-from ..swinstallfile import SwinstallFile
-from ..utils import datetime_from_str
+from ..base import SchemaBase
+from ...constants import ELEM
+from .swinstallfile import SwinstallFile
+from ...utils import datetime_from_str
 
 log = logging.getLogger(__name__)
 

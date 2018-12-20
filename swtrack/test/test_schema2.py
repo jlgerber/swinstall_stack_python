@@ -6,7 +6,7 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from swtrack.swinstall_stack.schema2 import Schema2
-from swtrack.swinstallfile import SwinstallFile
+from swtrack.swinstall_stack.schema2.swinstallfile import SwinstallFile
 from swtrack.utils import datetime_from_str
 
 STACK='''<?xml version="1.0" encoding="UTF-8"?>

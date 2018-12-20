@@ -1,10 +1,10 @@
 
 import os
 import xml.etree.ElementTree as ET
-from .constants import (DATETIME_FORMAT, ELEM)
+from ...constants import (DATETIME_FORMAT, ELEM)
 
 class SwinstallFile(object):
-    """Class which tracks metadata associated with an swinstall."""
+    """Class which tracks metadata associated with an swinstalled file."""
 
     def __init__(self, path, action, version, datetime, hash, revision=None):
         """Initialize an instance of SwinstallFile with metadata

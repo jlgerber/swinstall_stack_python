@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stack_history path="/Users/jonathangerber/src/python/swinstall_proposal/examples/schema2/bak/packages.xml/packages.xml_swinstall_stack" schema="2">
+   <elt action="install" datetime="20181219-185119" hash="917ae1b8a1362061beb722977c8951b2" version="7"/>
+   <elt action="install" datetime="20181219-184905" hash="2c5c799c6faf5c56587d3978464eb6ab" version="6"/>
+   <elt action="install" datetime="20181219-184801" hash="448c8a2a8da1255670f8d3c5ae85ec79" version="5"/>
    <elt action="install" datetime="20181219-183159" hash="59d63df66e90ad19a8243c186e340da7" version="4"/>
    <elt action="rollback" datetime="20181219-183135" hash="294fc86579b14b7d39" version="1"/>
    <elt action="rollback" datetime="20181219-183135" hash="c94f6266789a483a43" version="2"/>
