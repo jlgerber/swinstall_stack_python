@@ -1,5 +1,6 @@
 import os
 import xml.etree.ElementTree as ET
+from  ..constants import DEFAULT_SCHEMA
 
 class SchemaBase(object):
     schema_version = None
@@ -50,7 +51,7 @@ class SchemaBase(object):
         """
         tree = ET.parse(cls._swinstall_stack_from_file(swinstalled_file))
         root = tree.getroot()
-        schema_version = root.attrib.get("schema")
+        schema_version = root.attrib.get("schema", DEFAULT_SCHEMA)
 
         if schema_version:
             if not cls.registry.has_key(schema_version):
@@ -77,7 +78,19 @@ class SchemaBase(object):
         :return: Directory name of root.path
         :rtype: str
         """
-        return os.path.dirname(self.root.attrib.get("path"))
+        fullpath = self.root.attrib.get("path")
+        #assert fullpath != None, "root attrib path is None"
+        dirname =  os.path.dirname(fullpath)
+        #assert dirname != None, "root dirname is None"
+        return dirname
+
+    def versionless_filename(self):
+        """Return the versionless name of the swinstalled file
+
+        :returns: Versionless swinstalled file name
+        :rtype: str
+        """
+        return os.path.basename(self.root_dirname())
 
     def _validate_schema_version(self, root):
         """Validate the schema version of the calling class against the schema version
@@ -90,7 +103,7 @@ class SchemaBase(object):
 
         :raises: ValueError
         """
-        root_schema_version = root.attrib.get("schema")
+        root_schema_version = root.attrib.get("schema", DEFAULT_SCHEMA)
         if self.__class__.schema_version != root_schema_version:
             raise ValueError("wrong schema version {} for class: {} schema:{}"\
             .format(root_schema_version, self.__class__.__name__, self.__class__.schema_version))

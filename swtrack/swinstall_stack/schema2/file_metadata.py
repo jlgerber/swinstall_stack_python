@@ -2,6 +2,8 @@
 import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
+from ...utils import datetime_from_str
+from datetime import datetime
 
 class FileMetadata(object):
     """Class which tracks metadata associated with an swinstalled file."""
@@ -9,8 +11,8 @@ class FileMetadata(object):
     def __init__(self, path, action, version, datetime, hash, revision=None):
         """Initialize an instance of FileMetadata with metadata.
 
-        :param path: instance of root xml node
-        :type path: ElementTree.Element
+        :param path: path to file
+        :type path: str
         :param action:  The action performed by the entry (install|rollback)
         :type action: str
         :param version: The version number of the entry in swinstall stack
@@ -26,13 +28,20 @@ class FileMetadata(object):
         self._path = path#os.path.dirname(root.attrib.get("path"))
         self._action = action
         self._version = int(version)
-        self._datetime = datetime
+        self._datetime = self._set_datetime(datetime)
         self._hash = hash
         self._revision = revision
 
     def __str__(self):
         return "FileMetadata <action:{} version:{} datetime:{} hash:{} revision:{}>"\
         .format(self.action, self.version, self.datetime, self.hash, self.revision)
+
+    def _set_datetime(self, date_time):
+        if isinstance(date_time, datetime):
+            return date_time
+        if isinstance(date_time, basestring):
+            return datetime_from_str(date_time)
+        raise TypeError("Wrong type for date_time: {}. should be string or datetime".format(date_time.__class__.__name__))
 
     def element(self):
         """Return an XML element whose attributes correspond with those of the swinstall file.
