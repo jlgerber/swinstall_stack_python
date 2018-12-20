@@ -6,7 +6,7 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from swtrack.swinstall_stack.schema2 import Schema2
-from swtrack.swinstall_stack.schema2.swinstallfile import SwinstallFile
+from swtrack.swinstall_stack.schema2.file_metadata import FileMetadata
 from swtrack.utils import datetime_from_str
 
 STACK='''<?xml version="1.0" encoding="UTF-8"?>
@@ -36,7 +36,7 @@ class Schema2Test(unittest.TestCase):
 
     def test_current(self):
         current = self.schema.current()
-        expected = SwinstallFile(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema.root_dirname(),
                                  "install",
                                  "3",
                                  "20180702-144204",
@@ -45,7 +45,7 @@ class Schema2Test(unittest.TestCase):
 
     def test_current_false(self):
         current = self.schema.current()
-        expected = SwinstallFile(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema.root_dirname(),
                                  "install",
                                  "4",
                                  "20180702-144204",
@@ -70,7 +70,7 @@ class Schema2Test(unittest.TestCase):
 
     def test_version(self):
         answer = self.schema.version(1)
-        expected = SwinstallFile(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema.root_dirname(),
                                  "install",
                                  "1",
                                  "20171106-104603",
@@ -86,7 +86,7 @@ class Schema2Test(unittest.TestCase):
         fake_hash = "123456789"
         self.schema.insert_element(fake_hash, datetime_from_str(fake_datetime))
         current = self.schema.current()
-        expected = SwinstallFile(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema.root_dirname(),
                                  "install",
                                  "4",
                                  fake_datetime,
@@ -99,7 +99,7 @@ class Schema2Test(unittest.TestCase):
         fake_revision = "r1324145"
         self.schema.insert_element(fake_hash, datetime_from_str(fake_datetime), fake_revision)
         current = self.schema.current()
-        expected = SwinstallFile(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema.root_dirname(),
                                  "install",
                                  "4",
                                  fake_datetime,

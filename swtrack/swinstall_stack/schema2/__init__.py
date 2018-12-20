@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 from ..base import SchemaBase
 from ...constants import ELEM
-from .swinstallfile import SwinstallFile
+from .file_metadata import FileMetadata
 from ...utils import datetime_from_str
 
 log = logging.getLogger(__name__)
@@ -28,12 +28,12 @@ class Schema2(SchemaBase):
         super(Schema2, self).__init__(root)
 
     def current(self):
-        """Return the current swinstallfile metadata.
+        """Return the current file_metadata metadata.
 
         :returns:  metadata describing current swinstalled file
-        :rtype: SwinstallFile
+        :rtype: FileMetadata
         """
-        return SwinstallFile(self.root_dirname(), **self.root.iter(ELEM).next().attrib)
+        return FileMetadata(self.root_dirname(), **self.root.iter(ELEM).next().attrib)
 
     def next_version(self):
         """Returns the next version number after the current one.
@@ -64,12 +64,12 @@ class Schema2(SchemaBase):
                             to the swinstall file metadata
                             we whish to look up.
         :returns: Instance of file metadata
-        :rtype:  SwinstallFile
+        :rtype:  FileMetadata
         :raises KeyError: if the version passed in does not exist
         """
         for child in self.root:
             if child.attrib.get(self._version) == str(version):
-                return SwinstallFile(self.root_dirname(), **child.attrib)
+                return FileMetadata(self.root_dirname(), **child.attrib)
         raise KeyError("no version: {} has been published",format(version))
 
     def insert_element(self, hash, date_time=datetime.now(),  revision=None):
@@ -84,7 +84,7 @@ class Schema2(SchemaBase):
         :param revision: None|str - The optional scm revision number
         """
         next_version = self.next_version()
-        next = SwinstallFile(self.root, "install", next_version, date_time, hash, revision)
+        next = FileMetadata(self.root, "install", next_version, date_time, hash, revision)
         self._insert_element(next.element())
 
     def rollback_element(self, date_time=datetime.now()):
@@ -94,7 +94,7 @@ class Schema2(SchemaBase):
         :returns None:"""
         new_version = self.current_version() - 1
         installfile = self.version(new_version)
-        rollback = SwinstallFile(os.path.dirname(self.root.attrib.get("path")), "rollback", new_version, date_time, installfile.hash, installfile.revision)
+        rollback = FileMetadata(os.path.dirname(self.root.attrib.get("path")), "rollback", new_version, date_time, installfile.hash, installfile.revision)
         self._insert_element(rollback.element())
 
     def _insert_element(self, element):
@@ -113,13 +113,13 @@ class Schema2(SchemaBase):
         :param date_time: (datetime) used to constrain the lookup of file metadata to.
                           We find the most recent change in the log whose datetime
                           attribute is less than or equal to the supplied date_time
-        :returns SwinstallFile: file metadata if found
+        :returns FileMetadata: file metadata if found
         :raises LookupError: If unable to find an entry which is less than or equal to the
                              supplied datetime instance"""
         dt = datetime_from_str(date_time)
         for child in self.root:
             if datetime_from_str(child.datetime) <= dt:
-                return SwinstallFile(path=self.root_dirname(), **child.attrib)
+                return FileMetadata(path=self.root_dirname(), **child.attrib)
         basename = os.path.basename(os.path.dirname(self.root.attrib.get("path")))
         raise LookupError("unable to find version of {} installed on or before {}".format(basename, date_time))
 

@@ -3,11 +3,11 @@ import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 
-class SwinstallFile(object):
+class FileMetadata(object):
     """Class which tracks metadata associated with an swinstalled file."""
 
     def __init__(self, path, action, version, datetime, hash, revision=None):
-        """Initialize an instance of SwinstallFile with metadata
+        """Initialize an instance of FileMetadata with metadata
         :param path: (ElementTree.Element) instance of root xml node
         :param action: (str) The action performed by the entry (install|rollback)
         :param version: (str) The version number of the entry in swinstall stack
@@ -24,7 +24,7 @@ class SwinstallFile(object):
         self._revision = revision
 
     def __str__(self):
-        return "SwinstallFile <action:{} version:{} datetime:{} hash:{} revision:{}>"\
+        return "FileMetadata <action:{} version:{} datetime:{} hash:{} revision:{}>"\
         .format(self.action, self.version, self.datetime, self.hash, self.revision)
 
     def element(self):
