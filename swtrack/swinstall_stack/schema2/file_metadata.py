@@ -7,14 +7,21 @@ class FileMetadata(object):
     """Class which tracks metadata associated with an swinstalled file."""
 
     def __init__(self, path, action, version, datetime, hash, revision=None):
-        """Initialize an instance of FileMetadata with metadata
-        :param path: (ElementTree.Element) instance of root xml node
-        :param action: (str) The action performed by the entry (install|rollback)
-        :param version: (str) The version number of the entry in swinstall stack
-        :param datetime: (datetime) the time at which the tracked action occured.
-        :param hash: (str) a hex sequence stored as a string which represents a hash
+        """Initialize an instance of FileMetadata with metadata.
+
+        :param path: instance of root xml node
+        :type path: ElementTree.Element
+        :param action:  The action performed by the entry (install|rollback)
+        :type action: str
+        :param version: The version number of the entry in swinstall stack
+        :type version: str
+        :param datetime: the time at which the tracked action occured.
+        :type datetime: datetime
+        :param hash: A hex sequence stored as a string which represents a hash
                      of the contents of the file that the entry tracks
-        :param revision: (str) an optional revision id of the tracked file in SCM
+        :type hash: str
+        :param revision: an optional revision id of the tracked file in SCM
+        :type revision: str
         """
         self._path = path#os.path.dirname(root.attrib.get("path"))
         self._action = action
@@ -30,7 +37,9 @@ class FileMetadata(object):
     def element(self):
         """Return an XML element whose attributes correspond with those of the swinstall file.
 
-        :returns: ElementTree.Element"""
+        :returns: Xml Element initialized with file metadata.
+        :rtype:  ElementTree.Element
+        """
         attrib_dict = {
             "action":self.action,
             "version": str(self.version),
@@ -70,7 +79,8 @@ class FileMetadata(object):
     def fullpath(self):
         """Return the full path to the specific file that the entry is tracking.
 
-        :returns: (str) path to the tracked file
+        :returns: path to the tracked file
+        :rtype: str
         """
         dirname = self.versionless_path
         basename = os.path.basename(dirname)
