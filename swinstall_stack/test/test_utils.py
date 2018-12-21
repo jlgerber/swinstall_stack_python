@@ -2,7 +2,7 @@ from datetime import datetime, date, time
 import unittest
 # local imports
 import env
-from swtrack.utils import *
+from swinstall_stack.utils import *
 
 class UtilsTest(unittest.TestCase):
     def test_datetime_from_str(self):

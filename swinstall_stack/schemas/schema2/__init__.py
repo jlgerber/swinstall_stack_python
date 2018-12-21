@@ -22,7 +22,7 @@ class Schema2(SchemaBase, SchemaInterface):
     _version = "version"
 
     def __init__(self, root):
-        """Initialize Schema2 with the root element of the swinstall_stack xml tree.
+        """Initialize Schema2 with the root element of the schemas xml tree.
 
         :param root: root element of document.
         :type root: ElementTree.Element"""

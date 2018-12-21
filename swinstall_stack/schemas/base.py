@@ -29,12 +29,12 @@ class SchemaBase(object):
     @staticmethod
     def _swinstall_stack_from_file(swinstalled_file):
         """given the fullpath to an swinstalled file, construct the
-        full path to the relevant swinstall_stack
+        full path to the relevant schemas
 
         :param swinstalled_file: Full path to the swinstalled file
         :type swinstalled_file: str
 
-        :returns: full path to swinstall_stack
+        :returns: full path to schemas
         :rtype: str
         """
         file_name = os.path.basename(swinstalled_file)
@@ -125,19 +125,19 @@ class SchemaBase(object):
             .format(root_schema_version, self.__class__.__name__, self.__class__.schema_version))
 
     @property
-    def swinstall_stack(self):
-        """The full path to the swinstall_stack file.
+    def schemas(self):
+        """The full path to the schemas file.
 
-        :returns: full path to swinstall_stack file
+        :returns: full path to schemas file
         :rtype: str
         """
         return self._swinstall_stack
 
     @property
     def root(self):
-        """The root Element of the swinstall_stack document.
+        """The root Element of the schemas document.
 
-        :returns: root element of swinstall_stack document
+        :returns: root element of schemas document
         :rtype: ElementTree.Element
         """
         return self._root
@@ -171,7 +171,7 @@ class SchemaInterface(object):
         """Retrieve the versioned file corresponding to the specified date.
 
         :param date_time: What date and time we want to look up the file at.
-                        `file_on` will return the latest file in the swinstall_stack
+                        `file_on` will return the latest file in the schemas
                         whose datetime is less than or equal to the supplied *date_time*
                         parameter.
         :type date_time: datetime instance

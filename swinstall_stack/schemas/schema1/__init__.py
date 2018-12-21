@@ -22,7 +22,7 @@ class Schema1(SchemaBase, SchemaInterface):
     _version = "version"
 
     def __init__(self, root):
-        """Initialize Schema1 with the root element of the swinstall_stack xml tree.
+        """Initialize Schema1 with the root element of the schemas xml tree.
 
         :param root: root element of document.
         :type root: ElementTree.Element"""
@@ -83,7 +83,7 @@ class Schema1(SchemaBase, SchemaInterface):
         """Retrieve the versioned file corresponding to the specified date.
 
         :param date_time: What date and time we want to look up the file at.
-                        `file_on` will return the latest file in the swinstall_stack
+                        `file_on` will return the latest file in the schemas
                         whose datetime is less than or equal to the supplied *date_time*
                         parameter.
         :type date_time: datetime instance

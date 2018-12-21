@@ -5,9 +5,9 @@ import os
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
-from swtrack.swinstall_stack.base import SchemaBase
-from swtrack.utils import datetime_from_str
-from swtrack.constants import DEFAULT_SCHEMA, ELEM
+from swinstall_stack.schemas.base import SchemaBase
+from swinstall_stack.utils import datetime_from_str
+from swinstall_stack.constants import DEFAULT_SCHEMA, ELEM
 """
 """
 
@@ -25,19 +25,19 @@ class SchemaBaseTest(unittest.TestCase):
         self.versionless_file = os.path.join(tmpdir, "packages.xml")
         self.fullpath = os.path.join(tmpdir, "bak", "packages.xml")
         os.makedirs(self.fullpath)
-        self.swinstall_stack = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
+        self.schemas = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
 
-        with open(self.swinstall_stack,'w') as fh:
+        with open(self.schemas,'w') as fh:
             fh.write(STACK)
 
-        tree = ET.parse(self.swinstall_stack)
+        tree = ET.parse(self.schemas)
         root = tree.getroot()
         # we do this so that we dont raise an exception when instantiating
         SchemaBase.schema_version = DEFAULT_SCHEMA
         self.base = SchemaBase(root)
 
     def tearDown(self):
-        os.remove(self.swinstall_stack)
+        os.remove(self.schemas)
         os.rmdir(self.fullpath)
         del self.base
 
@@ -52,9 +52,9 @@ class SchemaBaseTest(unittest.TestCase):
         self.assertEqual(versionless, expect)
 
     def test_swinstall_stack_prop(self):
-        swinstall_stack = self.base.swinstall_stack
+        schemas = self.base.schemas
         expect = "/dd/facility/etc/bak/packages.xml/packages.xml_swinstall_stack"
-        self.assertEqual(swinstall_stack, expect)
+        self.assertEqual(schemas, expect)
 
     def test_root_prop(self):
         root = self.base.root

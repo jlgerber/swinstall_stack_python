@@ -6,9 +6,9 @@ import tempfile
 import unittest
 from datetime import datetime
 import xml.etree.ElementTree as ET
-from swtrack.swinstall_stack.schema1 import Schema1
-from swtrack.swinstall_stack.schema1.file_metadata import FileMetadata
-from swtrack.utils import datetime_from_str
+from swinstall_stack.schemas.schema1 import Schema1
+from swinstall_stack.schemas.schema1.file_metadata import FileMetadata
+from swinstall_stack.utils import datetime_from_str
 import logging
 log = logging.getLogger(__name__)
 
@@ -27,17 +27,17 @@ class Schema1Test(unittest.TestCase):
         self.versionless_file = os.path.join(tmpdir, "packages.xml")
         self.fullpath = os.path.join(tmpdir, "bak", "packages.xml")
         os.makedirs(self.fullpath)
-        self.swinstall_stack = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
+        self.schemas = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
 
-        with open(self.swinstall_stack,'w') as fh:
-            fh.write(STACK.format(self.swinstall_stack))
+        with open(self.schemas,'w') as fh:
+            fh.write(STACK.format(self.schemas))
 
-        tree = ET.parse(self.swinstall_stack)
+        tree = ET.parse(self.schemas)
         root = tree.getroot()
         self.schema = Schema1(root)
 
     def tearDown(self):
-        os.remove(self.swinstall_stack)
+        os.remove(self.schemas)
         os.rmdir(self.fullpath)
         del self.schema
 
