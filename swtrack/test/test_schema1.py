@@ -113,7 +113,7 @@ class Schema1Test(unittest.TestCase):
                                  fake_revision)
         self.assertEqual(current, expected)
 
-    def testr_rollback_element(self):
+    def test_rollback_element(self):
         # rollback 1
         self.schema.rollback_element(datetime.now())
         answer = self.schema.current_version()
@@ -124,7 +124,7 @@ class Schema1Test(unittest.TestCase):
         expected = datetime_from_str("20161213-093146")
         self.assertEqual(answer, expected)
 
-    def testr_too_many_rollbacks(self):
+    def test_too_many_rollbacks(self):
         self.schema.rollback_element(datetime.now())
         self.schema.rollback_element(datetime.now())
         with self.assertRaises(IndexError):
