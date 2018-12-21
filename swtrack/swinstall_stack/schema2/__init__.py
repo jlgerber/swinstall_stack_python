@@ -108,15 +108,16 @@ class Schema2(SchemaBase, SchemaInterface):
         """Given a datetime instance, find the most recent action which is less than or
         equal to the datetime.
 
-        :param date_time: (datetime) used to constrain the lookup of file metadata to.
+        :param date_time: used to constrain the lookup of file metadata to.
                           We find the most recent change in the log whose datetime
                           attribute is less than or equal to the supplied date_time
+        :type date_time: datetime | str which can be converted to datetime via utils.datetime_from_str
         :returns FileMetadata: file metadata if found
         :raises LookupError: If unable to find an entry which is less than or equal to the
                              supplied datetime instance"""
-        dt = datetime_from_str(date_time)
+        dt = datetime_from_str(date_time) if isinstance(date_time, basestring) else date_time
         for child in self.root:
-            if datetime_from_str(child.datetime) <= dt:
+            if datetime_from_str(child.attrib.get("datetime")) <= dt:
                 return FileMetadata(path=self.root_dirname(), **child.attrib)
         basename = os.path.basename(os.path.dirname(self.root.attrib.get("path")))
         raise LookupError("unable to find version of {} installed on or before {}".format(basename, date_time))

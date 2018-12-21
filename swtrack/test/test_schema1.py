@@ -46,14 +46,18 @@ class Schema1Test(unittest.TestCase):
         Schema1.parse(self.versionless_file)
 
     def test_current(self):
+        # grab the current file, retrieving a FileMetadata instance
         current = self.schema.current()
+
         expected = FileMetadata.init_from_version_str( self.schema.root_dirname(),
                                  "True",
                                  "20181105-103813")
         self.assertEqual(current, expected)
 
     def test_current_false(self):
+
         current = self.schema.current()
+
         expected = FileMetadata.init_from_version_str(self.schema.root_dirname(),
                                  "True",
                                  "20180702-144204")
@@ -61,16 +65,19 @@ class Schema1Test(unittest.TestCase):
 
 
     def test_current_version(self):
+
         answer = self.schema.current_version()
+
         expected = datetime_from_str("20181105-103813")
         self.assertEqual(answer, expected)
 
     def test_version(self):
+
         answer = self.schema.version(datetime_from_str("20181102-144204"))
+
         expected = FileMetadata.init_from_version_str(self.schema.root_dirname(),
                                 "False",
                                  "20181102-144204")
-
         self.assertEqual(answer,expected)
 
     def test_version_nomatch(self):
@@ -80,20 +87,26 @@ class Schema1Test(unittest.TestCase):
     def test_file_on_before_current(self):
         dt_str = "20181102-144204"
         dt = datetime_from_str(dt_str)
+
         result = self.schema.file_on(dt)
+
         expected = "{}/packages.xml_{}".format(self.schema.root_dirname(), dt_str)
         self.assertEqual(result, expected)
 
     def test_file_on_after_current(self):
         dt_str = "20181221-220000"
         dt = datetime_from_str(dt_str)
+
         result = self.schema.file_on(dt)
+
         expected = "{}/packages.xml_20181105-103813".format(self.schema.root_dirname())
         self.assertEqual(result, expected)
 
     def test_insert_element(self):
         fake_datetime = datetime_from_str("20181216-124101")
+
         self.schema.insert_element(fake_datetime)
+
         current = self.schema.current()
         expected = FileMetadata(self.schema.root_dirname(),
                                 "True",
@@ -106,6 +119,7 @@ class Schema1Test(unittest.TestCase):
         fake_revision = "r1324145"
 
         self.schema.insert_element(fake_datetime, fake_revision)
+
         current = self.schema.current()
         expected = FileMetadata(self.schema.root_dirname(),
                                  "True",
@@ -119,6 +133,7 @@ class Schema1Test(unittest.TestCase):
         answer = self.schema.current_version()
         expected = datetime_from_str("20181102-144204")
         self.assertEqual(answer, expected)
+        # rollback 2 - as far as we can go
         self.schema.rollback_element()
         answer = self.schema.current_version()
         expected = datetime_from_str("20161213-093146")
@@ -128,4 +143,8 @@ class Schema1Test(unittest.TestCase):
         self.schema.rollback_element(datetime.now())
         self.schema.rollback_element(datetime.now())
         with self.assertRaises(IndexError):
+            # there are two versions older than the current version. If
+            # we try to roll back a third time, we should produce an
+            # IndexError, as we try to use a negative index into root's
+            # list of elements
             self.schema.rollback_element(datetime.now())

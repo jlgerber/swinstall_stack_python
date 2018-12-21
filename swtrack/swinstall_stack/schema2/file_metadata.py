@@ -4,7 +4,7 @@ __all__ = ("FileMetadata",)
 import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
-from ...utils import datetime_from_str
+from ...utils import datetime_from_str, datetime_to_str
 from datetime import datetime
 
 class FileMetadata(object):
@@ -95,9 +95,10 @@ class FileMetadata(object):
         """
         dirname = self.versionless_path
         basename = os.path.basename(dirname)
-        return os.path.join(dirname,"{}_{}".format(basename, self.datetime))
+        return os.path.join(dirname,"{}_{}".format(basename, datetime_to_str(self.datetime)))
 
     def __eq__(self, other):
+        assert isinstance(other, FileMetadata), "cannot compare FileMetadata to {}".format(other.__class__.__name__)
         if self.versionless_path == other.versionless_path and \
         self.version == other.version and \
         self.datetime == other.datetime and \

@@ -196,4 +196,12 @@ class SchemaInterface(object):
         """
         raise NotImplementedError()
 
+    def rollforward_element(self, date_time):
+        """Undo a rollback. This only works if the current element was
+        set via a rollback.
+
+        :param date_time: The datetime at which the rollback occured
+        :type date_type: datetime instance
+        """
+        raise NotImplementedError()
 

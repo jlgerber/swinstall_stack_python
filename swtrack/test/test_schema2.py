@@ -10,7 +10,7 @@ from swtrack.swinstall_stack.schema2.file_metadata import FileMetadata
 from swtrack.utils import datetime_from_str
 
 STACK='''<?xml version="1.0" encoding="UTF-8"?>
-<stack_history path="/Users/jonathangerber/src/python/swinstall_proposal/examples/schema2/bak/packages.xml/packages.xml_swinstall_stack" schema="2">
+<stack_history path="{}" schema="2">
    <elt action="install" datetime="20180702-144204" hash="194f835569a79ba433" version="3"/>
    <elt action="install" datetime="20180101-103813" hash="c94f6266789a483a43" version="2"/>
    <elt action="install" datetime="20171106-104603" hash="294fc86579b14b7d39" version="1"/>
@@ -26,7 +26,7 @@ class Schema2Test(unittest.TestCase):
         self.swinstall_stack = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
 
         with open(self.swinstall_stack,'w') as fh:
-            fh.write(STACK)
+            fh.write(STACK.format(self.swinstall_stack))
 
         tree = ET.parse(self.swinstall_stack)
         root = tree.getroot()
@@ -131,7 +131,10 @@ class Schema2Test(unittest.TestCase):
             self.schema.rollback_element()
 
     def test_file_on(self):
-        pass
+        test_datetime = datetime_from_str("20180702-144204")
+        file_on = self.schema.file_on(test_datetime)
+        expect = os.path.join(self.fullpath, "packages.xml_20180702-144204")
+        self.assertEqual(file_on.fullpath(), expect)
 
 if __name__ == '__main__':
     unittest.main()
