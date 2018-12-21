@@ -4,7 +4,7 @@ __all__ = ("FileMetadata",)
 import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
-from ...utils import datetime_from_str
+from ...utils import datetime_from_str, datetime_to_str
 from datetime import datetime
 
 class FileMetadata(object):
@@ -27,7 +27,7 @@ class FileMetadata(object):
         """alternative constructor which takes a version string and initializes FileMetadata
         with it
 
-        :param path: THe path to the versionless file
+        :param path: THe path to the versioned file
         :type path: str
         :param is_current: Whether the version is current or not
         :type is_current: stringified bool
@@ -43,6 +43,11 @@ class FileMetadata(object):
     def __str__(self):
         return "FileMetadata <is_current:{} version:{} >"\
         .format(self.is_current,  self.version)
+
+
+    def __repr__(self):
+        return "FileMetadata <path: {} is_current:{} version:{} >"\
+        .format(self.path,  self.is_current,  self.version)
 
     @staticmethod
     def _extract_datetime_and_revision(date_time):
@@ -70,7 +75,12 @@ class FileMetadata(object):
 
     @property
     def versionless_path(self):
-        return self._path
+        versionless_path_dir = self.path.split("bak")[0]
+        # _20181111-112233 = 16 chars
+        # _11414214-425411_<revision> = 17 + revision length
+        endlen = 16 if self.revision is None else 17 + len(self.revision)
+        name = os.path.basename(self.path)[:-endlen]
+        return os.path.join(versionless_path_dir, name)
 
     def element(self):
         """Return an XML element whose attributes correspond with those of the swinstall file.
@@ -78,9 +88,16 @@ class FileMetadata(object):
         :returns: Xml Element initialized with file metadata.
         :rtype:  ElementTree.Element
         """
+        def to_version():
+            version = datetime_to_str(self.version)
+            if self.revision != None:
+                version = "{}_{}".format(version, self.revision)
+            return version
+
+        version = to_version()
         attrib_dict = {
             "is_current":self.is_current,
-            "version": self.version.strftime(DATETIME_FORMAT),
+            "version": to_version()
         }
 
         return ET.Element(ELEM, attrib=attrib_dict)
@@ -93,9 +110,20 @@ class FileMetadata(object):
     def version(self):
         return self._version
 
+    @property
+    def revision(self):
+        return self._revision
+    @property
+    def path(self):
+        return self._path
+
+    def fullpath(self):
+       return self._path
+
     def __eq__(self, other):
-        if self.versionless_path == other.versionless_path and \
+        if self.path == other.path and \
         self.version == other.version and \
+        self.revision == other.revision and \
         self.is_current == other.is_current :
             return True
         return False

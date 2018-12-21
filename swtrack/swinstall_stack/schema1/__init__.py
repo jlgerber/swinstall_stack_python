@@ -33,7 +33,9 @@ class Schema1(SchemaBase, SchemaInterface):
         """
         for elt in self.root:
             if elt.attrib.get("is_current") == "True":
-                return FileMetadata.init_from_version_str(self.root_dirname(), **elt.attrib)
+                date_time, revision = datetime_revision_from_str(elt.attrib.get("version"))
+                versioned_filepath = self._versioned_file( date_time, revision)
+                return FileMetadata.init_from_version_str(versioned_filepath, **elt.attrib)
 
         raise ValueError("Unable to find current")
 
@@ -67,10 +69,14 @@ class Schema1(SchemaBase, SchemaInterface):
 
         :raises: KeyError if version does not match any versions
         """
+        # convert to a datetime if we are a string
         version = datetime_from_str(version) if isinstance(version, basestring) else version
         for elt in self.root:
-            if datetime_revision_from_str(elt.attrib.get("version"))[0] == version:
-                return FileMetadata.init_from_version_str(self.root_dirname(), **elt.attrib)
+            # retrieve the datetime and revision from version
+            date_time, revision = datetime_revision_from_str(elt.attrib.get("version"))
+            if date_time == version:
+                versioned_filepath = self._versioned_file(date_time, revision)
+                return FileMetadata.init_from_version_str(versioned_filepath, **elt.attrib)
         raise KeyError("no version: {} has been published",format(version))
 
     def file_on(self, date_time):
@@ -85,9 +91,9 @@ class Schema1(SchemaBase, SchemaInterface):
         :returns: filepath to versioned file
         :rtype: str
 
-        :raises: KeyError - If date_time is invalid
+        :raises: LookupError - If date_time is invalid
         """
-        assert isinstance(date_time, datetime), "file_on takes an instance of datetime, not a {}".format(date_time.__class__.__name__)
+        date_time = datetime_from_str(date_time) if isinstance(date_time, basestring) else date_time
         latest = None
         latest_revision = None
         is_current = False
@@ -103,20 +109,27 @@ class Schema1(SchemaBase, SchemaInterface):
                 latest_revision = current_revision
             else:
                 if not latest:
-                    raise ValueError("no version less than or equal to {}"\
+                    raise LookupError("no version less than or equal to {}"\
                     .format(datetime_to_str(date_time)))
-                return self._versioned_file(latest, latest_revision)
+                return FileMetadata( \
+                    self._versioned_file(latest, latest_revision), \
+                    "False", datetime_from_str(latest), latest_revision)
             if is_current:
                 # if we are current, we may exit before the
                 if not latest:
-                    raise ValueError("current version not less than or equal to {}"\
+                    raise LookupError("current version not less than or equal to {}"\
                     .format(datetime_to_str(date_time)))
-                return self._versioned_file(latest, latest_revision)
+                return FileMetadata( \
+                    self._versioned_file(latest, latest_revision),
+                    "True", datetime_from_str(latest), latest_revision)
 
-        raise ValueError("no version less than or equal to {}".format(datetime_to_str(date_time)))
+        raise LookupError("no version less than or equal to {}".format(datetime_to_str(date_time)))
 
     def _versioned_file(self, date_time, revision_str):
+        """Given a date_time (datetime | str) and an optional revision_str, return
+        the full path to the versioned file"""
         revision = "" if revision_str is None else "_{}".format(revision_str)
+        date_time = datetime_to_str(date_time) if isinstance(date_time, datetime) else date_time
         return os.path.join(self.root_dirname(),
                 "{}_{}{}".format(self.versionless_filename(), date_time, revision))
 
@@ -136,7 +149,8 @@ class Schema1(SchemaBase, SchemaInterface):
         :param revision: optional revision id from VCS.
         :type revision: str
         """
-        next = FileMetadata(self.root, "True", date_time, revision)
+        log.debug("insert_element datetime:{} revision:{}".format(date_time, revision))
+        next = FileMetadata(self._versioned_file(date_time, revision), "True", date_time, revision)
         self._insert_element_into_root(next.element())
 
     def rollback_element(self, date_time=datetime.now()):

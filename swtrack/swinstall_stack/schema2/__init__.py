@@ -28,13 +28,19 @@ class Schema2(SchemaBase, SchemaInterface):
         :type root: ElementTree.Element"""
         super(Schema2, self).__init__(root)
 
+    def _versioned_file(self, version):
+
+        return os.path.join(self.root_dirname(),
+                "{}_{}".format(self.versionless_filename(), version))
+
     def current(self):
         """Return the current file_metadata metadata.
 
         :returns:  metadata describing current swinstalled file
         :rtype: FileMetadata
         """
-        return FileMetadata(self.root_dirname(), **self.root.iter(ELEM).next().attrib)
+        elem = self.root.iter(ELEM).next()
+        return FileMetadata(self._versioned_file(elem.attrib.get("version")), **elem.attrib)
 
     def next_version(self):
         """Returns the next version number after the current one.
@@ -70,7 +76,7 @@ class Schema2(SchemaBase, SchemaInterface):
         """
         for child in self.root:
             if child.attrib.get(self._version) == str(version):
-                return FileMetadata(self.root_dirname(), **child.attrib)
+                return FileMetadata(self._versioned_file(child.attrib.get("version")), **child.attrib)
         raise KeyError("no version: {} has been published",format(version))
 
 
@@ -90,7 +96,7 @@ class Schema2(SchemaBase, SchemaInterface):
         :param revision: None|str - The optional scm revision number
         """
         next_version = self.next_version()
-        next = FileMetadata(self.root, "install", next_version, date_time, hash, revision)
+        next = FileMetadata(self._versioned_file(next_version), "install", next_version, date_time, hash, revision)
         self._insert_element_into_root(next.element())
 
     def rollback_element(self, date_time=datetime.now()):
@@ -100,7 +106,7 @@ class Schema2(SchemaBase, SchemaInterface):
         :returns None:"""
         new_version = self.current_version() - 1
         installfile = self.version(new_version)
-        rollback = FileMetadata(os.path.dirname(self.root.attrib.get("path")), "rollback", new_version, date_time, installfile.hash, installfile.revision)
+        rollback = FileMetadata(self._versioned_file(new_version), "rollback", new_version, date_time, installfile.hash, installfile.revision)
         self._insert_element_into_root(rollback.element())
 
 
@@ -118,7 +124,7 @@ class Schema2(SchemaBase, SchemaInterface):
         dt = datetime_from_str(date_time) if isinstance(date_time, basestring) else date_time
         for child in self.root:
             if datetime_from_str(child.attrib.get("datetime")) <= dt:
-                return FileMetadata(path=self.root_dirname(), **child.attrib)
+                return FileMetadata(self._versioned_file(child.attrib.get("version")), **child.attrib)
         basename = os.path.basename(os.path.dirname(self.root.attrib.get("path")))
         raise LookupError("unable to find version of {} installed on or before {}".format(basename, date_time))
 

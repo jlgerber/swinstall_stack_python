@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite name="nosetests" tests="1" errors="0" failures="1" skip="0"><testcase classname="test_schema1.Schema1Test" name="test_version" time="0.008"><failure type="exceptions.AssertionError" message="&lt;swtrack.swinstall_stack.schema1.file_metadata.FileMetadata object at 0x10bc01d50&gt; != &lt;swtrack.swinstall_stack.schema1.file_metadata.FileMetadata object at 0x10bc01a90&gt;"><![CDATA[Traceback (most recent call last):
+  File "/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "/Users/jonathangerber/src/python/swinstall_proposal/swtrack/test/test_schema1.py", line 81, in test_version
+    self.assertEqual(answer,expected)
+  File "/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py", line 513, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/usr/local/Cellar/python@2/2.7.15_1/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py", line 506, in _baseAssertEqual
+    raise self.failureException(msg)
+AssertionError: <swtrack.swinstall_stack.schema1.file_metadata.FileMetadata object at 0x10bc01d50> != <swtrack.swinstall_stack.schema1.file_metadata.FileMetadata object at 0x10bc01a90>
+]]></failure></testcase></testsuite>

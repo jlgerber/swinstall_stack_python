@@ -49,18 +49,20 @@ class Schema1Test(unittest.TestCase):
         # grab the current file, retrieving a FileMetadata instance
         current = self.schema.current()
 
-        expected = FileMetadata.init_from_version_str( self.schema.root_dirname(),
-                                 "True",
-                                 "20181105-103813")
+        expected = FileMetadata.init_from_version_str(
+            self.schema._versioned_file("20181105-103813", None),
+            "True",
+            "20181105-103813")
         self.assertEqual(current, expected)
 
     def test_current_false(self):
 
         current = self.schema.current()
 
-        expected = FileMetadata.init_from_version_str(self.schema.root_dirname(),
-                                 "True",
-                                 "20180702-144204")
+        expected = FileMetadata.init_from_version_str(
+            self.schema._versioned_file("20180702-144204", None),
+            "True",
+            "20180702-144204")
         self.assertNotEqual(current, expected)
 
 
@@ -75,10 +77,11 @@ class Schema1Test(unittest.TestCase):
 
         answer = self.schema.version(datetime_from_str("20181102-144204"))
 
-        expected = FileMetadata.init_from_version_str(self.schema.root_dirname(),
+        expected = FileMetadata.init_from_version_str(self.schema._versioned_file("20181102-144204", None),
                                 "False",
                                  "20181102-144204")
-        self.assertEqual(answer,expected)
+
+        self.assertEqual(answer, expected)
 
     def test_version_nomatch(self):
         with self.assertRaises(KeyError):
@@ -91,7 +94,7 @@ class Schema1Test(unittest.TestCase):
         result = self.schema.file_on(dt)
 
         expected = "{}/packages.xml_{}".format(self.schema.root_dirname(), dt_str)
-        self.assertEqual(result, expected)
+        self.assertEqual(result.path, expected)
 
     def test_file_on_after_current(self):
         dt_str = "20181221-220000"
@@ -100,7 +103,7 @@ class Schema1Test(unittest.TestCase):
         result = self.schema.file_on(dt)
 
         expected = "{}/packages.xml_20181105-103813".format(self.schema.root_dirname())
-        self.assertEqual(result, expected)
+        self.assertEqual(result.path, expected)
 
     def test_insert_element(self):
         fake_datetime = datetime_from_str("20181216-124101")
@@ -108,7 +111,7 @@ class Schema1Test(unittest.TestCase):
         self.schema.insert_element(fake_datetime)
 
         current = self.schema.current()
-        expected = FileMetadata(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema._versioned_file(fake_datetime, None),
                                 "True",
                                 fake_datetime,
                                 )
@@ -121,7 +124,7 @@ class Schema1Test(unittest.TestCase):
         self.schema.insert_element(fake_datetime, fake_revision)
 
         current = self.schema.current()
-        expected = FileMetadata(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema._versioned_file(fake_datetime, fake_revision),
                                  "True",
                                  fake_datetime,
                                  fake_revision)
@@ -148,3 +151,37 @@ class Schema1Test(unittest.TestCase):
             # IndexError, as we try to use a negative index into root's
             # list of elements
             self.schema.rollback_element(datetime.now())
+
+    def test_file_on(self):
+        """provide the current timestamp and make sure that we get back the
+        current FileMetadata instance"""
+        test_datetime = datetime_from_str("20181105-103813")
+
+        file_on = self.schema.file_on(test_datetime)
+
+        expect = os.path.join(self.fullpath, "packages.xml_20181105-103813")
+        self.assertEqual(file_on.fullpath(), expect)
+
+    def test_file_on_str(self):
+        """The previous test should also work by supplying a string in the appropriate
+        datetime format"""
+        test_datetime = "20181105-103813"
+
+        file_on = self.schema.file_on(test_datetime)
+
+        expect = os.path.join(self.fullpath, "packages.xml_20181105-103813")
+        self.assertEqual(file_on.fullpath(), expect)
+
+    def test_file_on_str_inbetween(self):
+        """Test a timestamp that is inbetween the current timestamp and the previous
+        timestamp. This should yield the previous timestamp"""
+        test_datetime = "20181105-103812"
+
+        file_on = self.schema.file_on(test_datetime)
+
+        expect = os.path.join(self.fullpath, "packages.xml_20181102-144204")
+        self.assertEqual(file_on.fullpath(), expect)
+
+    def test_file_on_nomatch(self):
+        with self.assertRaises(LookupError):
+            self.schema.file_on("20001010-111111")

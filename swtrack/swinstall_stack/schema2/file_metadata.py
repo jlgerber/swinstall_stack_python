@@ -27,7 +27,7 @@ class FileMetadata(object):
         :param revision: an optional revision id of the tracked file in SCM
         :type revision: str
         """
-        self._path = path#os.path.dirname(root.attrib.get("path"))
+        self._path = path
         self._action = action
         self._version = int(version)
         self._datetime = self._set_datetime(datetime)
@@ -35,8 +35,8 @@ class FileMetadata(object):
         self._revision = revision
 
     def __str__(self):
-        return "FileMetadata <action:{} version:{} datetime:{} hash:{} revision:{}>"\
-        .format(self.action, self.version, self.datetime, self.hash, self.revision)
+        return "FileMetadata <path:{} action:{} version:{} datetime:{} hash:{} revision:{}>"\
+        .format(self.path, self.action, self.version, self.datetime, self.hash, self.revision)
 
     def _set_datetime(self, date_time):
         if isinstance(date_time, datetime):
@@ -64,8 +64,17 @@ class FileMetadata(object):
         return ET.Element(ELEM, attrib=attrib_dict)
 
     @property
-    def versionless_path(self):
+    def path(self):
         return self._path
+
+
+    @property
+    def versionless_path(self):
+        return os.path.basename(
+            os.path.dirname(
+                self.path
+            )
+        )
 
     @property
     def action(self):
@@ -93,13 +102,14 @@ class FileMetadata(object):
         :returns: path to the tracked file
         :rtype: str
         """
-        dirname = self.versionless_path
-        basename = os.path.basename(dirname)
-        return os.path.join(dirname,"{}_{}".format(basename, datetime_to_str(self.datetime)))
+        return self._path
+        # dirname = self.versionless_path
+        # basename = os.path.basename(dirname)
+        # return os.path.join(dirname,"{}_{}".format(basename, self.version))
 
     def __eq__(self, other):
         assert isinstance(other, FileMetadata), "cannot compare FileMetadata to {}".format(other.__class__.__name__)
-        if self.versionless_path == other.versionless_path and \
+        if self.path == other.path and \
         self.version == other.version and \
         self.datetime == other.datetime and \
         self.hash == other.hash and \

@@ -1,10 +1,11 @@
 #initialize testing environment
 import env
-# imports
+# library imports
 import os
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+# local imports
 from swtrack.swinstall_stack.schema2 import Schema2
 from swtrack.swinstall_stack.schema2.file_metadata import FileMetadata
 from swtrack.utils import datetime_from_str
@@ -42,8 +43,10 @@ class Schema2Test(unittest.TestCase):
         Schema2.parse(self.versionless_file)
 
     def test_current(self):
+        """current returns a FileMetadata instance with the current element's
+        data"""
         current = self.schema.current()
-        expected = FileMetadata(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema._versioned_file("3"),
                                  "install",
                                  "3",
                                  "20180702-144204",
@@ -60,6 +63,7 @@ class Schema2Test(unittest.TestCase):
         self.assertNotEqual(current, expected)
 
     def test_next_version(self):
+        """Get the next version number"""
         answer = self.schema.next_version()
         expected = 4
         self.assertEqual(answer, expected)
@@ -77,7 +81,7 @@ class Schema2Test(unittest.TestCase):
 
     def test_version(self):
         answer = self.schema.version(1)
-        expected = FileMetadata(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema._versioned_file("1"),
                                  "install",
                                  "1",
                                  "20171106-104603",
@@ -93,7 +97,7 @@ class Schema2Test(unittest.TestCase):
         fake_hash = "123456789"
         self.schema.insert_element(fake_hash, datetime_from_str(fake_datetime))
         current = self.schema.current()
-        expected = FileMetadata(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema._versioned_file("4"),
                                  "install",
                                  "4",
                                  fake_datetime,
@@ -106,7 +110,7 @@ class Schema2Test(unittest.TestCase):
         fake_revision = "r1324145"
         self.schema.insert_element(fake_hash, datetime_from_str(fake_datetime), fake_revision)
         current = self.schema.current()
-        expected = FileMetadata(self.schema.root_dirname(),
+        expected = FileMetadata(self.schema._versioned_file("4"),
                                  "install",
                                  "4",
                                  fake_datetime,
@@ -120,6 +124,7 @@ class Schema2Test(unittest.TestCase):
         answer = self.schema.current_version()
         expected = 2
         self.assertEqual(answer, expected)
+        # secon rollback
         self.schema.rollback_element()
         answer = self.schema.current_version()
         self.assertEqual(answer, 1)
@@ -131,10 +136,38 @@ class Schema2Test(unittest.TestCase):
             self.schema.rollback_element()
 
     def test_file_on(self):
+        """provide the current timestamp and make sure that we get back the
+        current FileMetadata instance"""
         test_datetime = datetime_from_str("20180702-144204")
+
         file_on = self.schema.file_on(test_datetime)
-        expect = os.path.join(self.fullpath, "packages.xml_20180702-144204")
+
+        expect = os.path.join(self.fullpath, "packages.xml_3")
         self.assertEqual(file_on.fullpath(), expect)
+
+    def test_file_on_str(self):
+        """The previous test should also work by supplying a string in the appropriate
+        datetime format"""
+        test_datetime = "20180702-144204"
+
+        file_on = self.schema.file_on(test_datetime)
+
+        expect = os.path.join(self.fullpath, "packages.xml_3")
+        self.assertEqual(file_on.fullpath(), expect)
+
+    def test_file_on_str_inbetween(self):
+        """Test a timestamp that is inbetween the current timestamp and the previous
+        timestamp. This should yield the previous timestamp"""
+        test_datetime = "20180702-124204"
+
+        file_on = self.schema.file_on(test_datetime)
+
+        expect = os.path.join(self.fullpath, "packages.xml_2")
+        self.assertEqual(file_on.fullpath(), expect)
+
+    def test_file_on_nomatch(self):
+        with self.assertRaises(LookupError):
+            self.schema.file_on("20001010-111111")
 
 if __name__ == '__main__':
     unittest.main()

@@ -179,7 +179,7 @@ class SchemaInterface(object):
         :returns: filepath to versioned file
         :rtype: str
 
-        :raises: KeyError - If date_time is invalid
+        :raises: LookupError - If date_time is invalid
         """
         raise NotImplementedError()
 
