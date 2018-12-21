@@ -52,7 +52,7 @@ class Schema1(SchemaBase, SchemaInterface):
         """
         for elt in self.root:
             if elt.attrib.get("is_current") == "True":
-                return datetime_from_str(elt.attrib.get("version"))
+                return datetime_revision_from_str(elt.attrib.get("version"))[0]
         raise ValueError("No current version")
 
     def version(self, version):
@@ -139,7 +139,7 @@ class Schema1(SchemaBase, SchemaInterface):
         next = FileMetadata(self.root, "True", date_time, revision)
         self._insert_element_into_root(next.element())
 
-    def rollback_element(self, date_time):
+    def rollback_element(self, date_time=datetime.now()):
         """Rollback the current entry to point at the previous entry.
 
         :param date_time: The datetime at which the rollback occured
@@ -153,7 +153,10 @@ class Schema1(SchemaBase, SchemaInterface):
         for elt in self.root:
             if elt.attrib.get("is_current") == "True":
                 elt.attrib["is_current"] = "False"
-                list(self.root)[cnt-1].attrib["is_current"] = "True"
+                lookup = cnt -1
+                if lookup < 0:
+                    raise IndexError("Attempt to roll back before start")
+                list(self.root)[lookup].attrib["is_current"] = "True"
                 break
             cnt +=1
         self._save()

@@ -4,13 +4,16 @@ import env
 import os
 import tempfile
 import unittest
+from datetime import datetime
 import xml.etree.ElementTree as ET
 from swtrack.swinstall_stack.schema1 import Schema1
 from swtrack.swinstall_stack.schema1.file_metadata import FileMetadata
 from swtrack.utils import datetime_from_str
+import logging
+log = logging.getLogger(__name__)
 
 
-STACK='''<stack_history path="/dd/facility/ext/bak/packages.xml/packages.xml_swinstall_stack">
+STACK='''<stack_history path="{}">
     <elt is_current="False" version="20161213-093146_r575055" />
     <elt is_current="False" version="20181102-144204" />
     <elt is_current="True" version="20181105-103813" />
@@ -27,7 +30,7 @@ class Schema1Test(unittest.TestCase):
         self.swinstall_stack = os.path.join(self.fullpath, "packages.xml_swinstall_stack")
 
         with open(self.swinstall_stack,'w') as fh:
-            fh.write(STACK)
+            fh.write(STACK.format(self.swinstall_stack))
 
         tree = ET.parse(self.swinstall_stack)
         root = tree.getroot()
@@ -78,12 +81,51 @@ class Schema1Test(unittest.TestCase):
         dt_str = "20181102-144204"
         dt = datetime_from_str(dt_str)
         result = self.schema.file_on(dt)
-        expected = "/dd/facility/ext/bak/packages.xml/packages.xml_{}".format(dt_str)
+        expected = "{}/packages.xml_{}".format(self.schema.root_dirname(), dt_str)
         self.assertEqual(result, expected)
 
     def test_file_on_after_current(self):
         dt_str = "20181221-220000"
         dt = datetime_from_str(dt_str)
         result = self.schema.file_on(dt)
-        expected = "/dd/facility/ext/bak/packages.xml/packages.xml_20181105-103813"
+        expected = "{}/packages.xml_20181105-103813".format(self.schema.root_dirname())
         self.assertEqual(result, expected)
+
+    def test_insert_element(self):
+        fake_datetime = datetime_from_str("20181216-124101")
+        self.schema.insert_element(fake_datetime)
+        current = self.schema.current()
+        expected = FileMetadata(self.schema.root_dirname(),
+                                "True",
+                                fake_datetime,
+                                )
+        self.assertEqual(current, expected)
+
+    def test_insert_element_with_revision(self):
+        fake_datetime = datetime_from_str("20181216-124101")
+        fake_revision = "r1324145"
+
+        self.schema.insert_element(fake_datetime, fake_revision)
+        current = self.schema.current()
+        expected = FileMetadata(self.schema.root_dirname(),
+                                 "True",
+                                 fake_datetime,
+                                 fake_revision)
+        self.assertEqual(current, expected)
+
+    def testr_rollback_element(self):
+        # rollback 1
+        self.schema.rollback_element(datetime.now())
+        answer = self.schema.current_version()
+        expected = datetime_from_str("20181102-144204")
+        self.assertEqual(answer, expected)
+        self.schema.rollback_element()
+        answer = self.schema.current_version()
+        expected = datetime_from_str("20161213-093146")
+        self.assertEqual(answer, expected)
+
+    def testr_too_many_rollbacks(self):
+        self.schema.rollback_element(datetime.now())
+        self.schema.rollback_element(datetime.now())
+        with self.assertRaises(IndexError):
+            self.schema.rollback_element(datetime.now())
