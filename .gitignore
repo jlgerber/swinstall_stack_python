@@ -1,2 +1,4 @@
 *.pyc
 .vscode
+.noseids
+nosetests.xml
