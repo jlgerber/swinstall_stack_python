@@ -1,19 +1,19 @@
 
 __all__ = ("FileMetadata",)
 
+from datetime import datetime
 import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 from ...utils import datetime_from_str, datetime_to_str
-from datetime import datetime
-
-class FileMetadata(object):
+from ..file_metadata_base import FileMetadataBase
+class FileMetadata(FileMetadataBase):
     """Class which tracks metadata associated with an swinstalled file."""
 
     def __init__(self, path, action, version, datetime, hash, revision=None):
         """Initialize an instance of FileMetadata with metadata.
 
-        :param path: path to file
+        :param path: path to versioned file
         :type path: str
         :param action:  The action performed by the entry (install|rollback)
         :type action: str
@@ -33,6 +33,8 @@ class FileMetadata(object):
         self._datetime = self._set_datetime(datetime)
         self._hash = hash
         self._revision = revision
+
+        super(FileMetadata, self).__init__()
 
     def __str__(self):
         return "FileMetadata <path:{} action:{} version:{} datetime:{} hash:{} revision:{}>"\
@@ -67,7 +69,6 @@ class FileMetadata(object):
     def path(self):
         return self._path
 
-
     @property
     def versionless_path(self):
         return os.path.basename(
@@ -95,17 +96,6 @@ class FileMetadata(object):
     @property
     def revision(self):
         return self._revision
-
-    def fullpath(self):
-        """Return the full path to the specific file that the entry is tracking.
-
-        :returns: path to the tracked file
-        :rtype: str
-        """
-        return self._path
-        # dirname = self.versionless_path
-        # basename = os.path.basename(dirname)
-        # return os.path.join(dirname,"{}_{}".format(basename, self.version))
 
     def __eq__(self, other):
         assert isinstance(other, FileMetadata), "cannot compare FileMetadata to {}".format(other.__class__.__name__)

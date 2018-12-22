@@ -6,8 +6,9 @@ import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 from ...utils import datetime_from_str, datetime_to_str
 from datetime import datetime
+from ..file_metadata_base import FileMetadataBase
 
-class FileMetadata(object):
+class FileMetadata(FileMetadataBase):
     def __init__(self, path, is_current, version, revision=None):
         self._path = path
         self._is_current = is_current
@@ -15,6 +16,7 @@ class FileMetadata(object):
         self._revision = revision
         assert isinstance(version, datetime), "version must be of type datetime, not {}"\
                                                 .format(version.__class__.__name__)
+        super(FileMetadata, self).__init__()
         # get a tuple containing the datetime and optionally the revision
         #datetime_revision = self._extract_datetime_and_revision(version)
         #self._version = datetime_revision[0]
@@ -94,7 +96,6 @@ class FileMetadata(object):
                 version = "{}_{}".format(version, self.revision)
             return version
 
-        version = to_version()
         attrib_dict = {
             "is_current":self.is_current,
             "version": to_version()
@@ -113,12 +114,10 @@ class FileMetadata(object):
     @property
     def revision(self):
         return self._revision
+
     @property
     def path(self):
         return self._path
-
-    def fullpath(self):
-       return self._path
 
     def __eq__(self, other):
         if self.path == other.path and \
