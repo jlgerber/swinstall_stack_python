@@ -184,3 +184,8 @@ class Schema1Test(unittest.TestCase):
     def test_file_on_nomatch(self):
         with self.assertRaises(LookupError):
             self.schema.file_on("20001010-111111")
+
+
+
+if __name__ == '__main__':
+    unittest.main()

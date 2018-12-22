@@ -64,3 +64,7 @@ def elems_equal(e1, e2):
     if e1.tag == e2.tag and e1.attrib == e2.attrib:
         return True
     return False
+
+
+if __name__ == '__main__':
+    unittest.main()

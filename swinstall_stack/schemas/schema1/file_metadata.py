@@ -9,6 +9,7 @@ from datetime import datetime
 from ..base.file_metadata import FileMetadataBase
 
 class FileMetadata(FileMetadataBase):
+
     def __init__(self, path, is_current, version, revision=None):
         self._path = path
         self._is_current = is_current
