@@ -12,14 +12,13 @@ import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 from ...utils import datetime_from_str
 from ..base.file_metadata import FileMetadataBase
-from ..schema2 import Schema2
-
+import swinstall_stack.schemas.schema2
 __all__ = ("FileMetadata",)
 
 class FileMetadata(FileMetadataBase):
     """Class which tracks metadata associated with an swinstalled file."""
 
-    def __init__(self, path, action, version, datetime_val, hash_str, revision=None):
+    def __init__(self, path, action, version, date_time, hash_value, revision=None):
         """Initialize an instance of FileMetadata with metadata.
 
         :param path: path to versioned file
@@ -28,30 +27,30 @@ class FileMetadata(FileMetadataBase):
         :type action: str
         :param version: The version number of the entry in swinstall stack
         :type version: str
-        :param datetime_val: the time at which the tracked action occured.
-        :type datetime_val: datetime
-        :param hash_str: A hex sequence stored as a string which represents a hash
+        :param date_time: the time at which the tracked action occured.
+        :type date_time: datetime
+        :param hash_value: A hex sequence stored as a string which represents a hash
                      of the contents of the file that the entry tracks
-        :type hash_str: str
+        :type hash_value: str
         :param revision: an optional revision id of the tracked file in SCM
         :type revision: str
         """
         self._path = path
         self._action = action
         self._version = int(version)
-        self._datetime = self._set_datetime(datetime_val)
-        self._hash = hash_str
+        self._date_time = self._set_datetime(date_time)
+        self._hash_value = hash_value
         self._revision = revision
 
         super(FileMetadata, self).__init__()
 
     def __str__(self):
-        return "FileMetadata <path:{} action:{} version:{} datetime:{} hash:{} revision:{}>"\
+        return "FileMetadata <path:{} action:{} version:{} date_time:{} hash_value:{} revision:{}>"\
         .format(self.path,
                 self.action,
                 self.version,
-                self.datetime,
-                self.hash,
+                self.date_time,
+                self.hash_value,
                 self.revision)
 
     @staticmethod
@@ -73,8 +72,8 @@ class FileMetadata(FileMetadataBase):
         attrib_dict = {
             "action":self.action,
             "version": str(self.version),
-            "datetime": self.datetime.strftime(DATETIME_FORMAT),
-            "hash": self.hash
+            "date_time": self.date_time.strftime(DATETIME_FORMAT),
+            "hash_value": self.hash_value
         }
 
         if self.revision:
@@ -89,7 +88,7 @@ class FileMetadata(FileMetadataBase):
         # get the path to the versionless file
         base_path = self.path.split("bak")[0]
         base_path = os.path.join(base_path, self.versionless_path)
-        schema = Schema2.parse(base_path)
+        schema = swinstall_stack.schemas.schema2.Schema2.parse(base_path)
         current = schema.current()
         return self == current
 
@@ -118,14 +117,14 @@ class FileMetadata(FileMetadataBase):
         return self._version
 
     @property
-    def datetime(self):
+    def date_time(self):
         """read only property"""
-        return self._datetime
+        return self._date_time
 
     @property
-    def hash(self):
+    def hash_value(self):
         """read only property"""
-        return self._hash
+        return self._hash_value
 
     @property
     def revision(self):
@@ -137,8 +136,8 @@ class FileMetadata(FileMetadataBase):
                "cannot compare FileMetadata to {}".format(other.__class__.__name__)
         if self.path == other.path and \
         self.version == other.version and \
-        self.datetime == other.datetime and \
-        self.hash == other.hash and \
+        self.date_time == other.date_time and \
+        self.hash_value == other.hash_value and \
         self.revision == other.revision:
             return True
         return False

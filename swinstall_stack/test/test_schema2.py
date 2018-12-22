@@ -12,9 +12,9 @@ from swinstall_stack.utils import datetime_from_str
 
 STACK='''<?xml version="1.0" encoding="UTF-8"?>
 <stack_history path="{}" schema="2">
-   <elt action="install" datetime="20180702-144204" hash="194f835569a79ba433" version="3"/>
-   <elt action="install" datetime="20180101-103813" hash="c94f6266789a483a43" version="2"/>
-   <elt action="install" datetime="20171106-104603" hash="294fc86579b14b7d39" version="1"/>
+   <elt action="install" date_time="20180702-144204" hash_value="194f835569a79ba433" version="3"/>
+   <elt action="install" date_time="20180101-103813" hash_value="c94f6266789a483a43" version="2"/>
+   <elt action="install" date_time="20171106-104603" hash_value="294fc86579b14b7d39" version="1"/>
 </stack_history>
 '''
 

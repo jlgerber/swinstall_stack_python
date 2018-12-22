@@ -98,10 +98,10 @@ class Schema2(SchemaCommon, SchemaBase):
 
         :param hash_str: (str) Hash of file contents.
         :type hash_str: str
-        :param date_time: (datetime) optional instance of datetime class.
+        :param date_time: optional instance of datetime class.
                           Will generate datetime for current date and time
                           if none is supplied
-        :type date_time:
+        :type date_time: datetime
         :param revision: None|str - The optional scm revision number
         """
         next_version = self.next_version()
@@ -137,7 +137,7 @@ class Schema2(SchemaCommon, SchemaBase):
                                 "rollback",
                                 new_version,
                                 date_time,
-                                installfile.hash,
+                                installfile.hash_value,
                                 installfile.revision)
         self._insert_element_into_root(rollback.element())
 
@@ -161,7 +161,7 @@ class Schema2(SchemaCommon, SchemaBase):
         datetime_val = datetime_from_str(date_time) \
                         if isinstance(date_time, basestring) else date_time
         for child in self.root:
-            if datetime_from_str(child.attrib.get("datetime")) <= datetime_val:
+            if datetime_from_str(child.attrib.get("date_time")) <= datetime_val:
                 return FileMetadata(self._versioned_file(child.attrib.get("version")),
                                     **child.attrib)
         basename = os.path.basename(os.path.dirname(self.root.attrib.get("path")))
