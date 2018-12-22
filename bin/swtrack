@@ -12,9 +12,10 @@ def add_src_to_syspath():
 from datetime import datetime
 add_src_to_syspath()
 
-from swinstall_stack.schemas.base import SchemaBase
-from swinstall_stack.schemas.schema2 import Schema2
-from swinstall_stack.schemas.schema1 import Schema1
+from swinstall_stack.schemas.base import SchemaCommon
+from swinstall_stack.schemas import *
+#from swinstall_stack.schemas.schema2 import Schema2
+#from swinstall_stack.schemas.schema1 import Schema1
 
 import logging
 #logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
@@ -40,7 +41,7 @@ log.addHandler(stream)
 
 
 # Register schemas
-#SchemaBase.register(Schema2)
+#SchemaCommon.register(Schema2)
 
 def gen_random_hash():
     import random
@@ -49,7 +50,7 @@ def gen_random_hash():
 
 usage = "usage: swtrack <install|rollback>"
 def parse(action, schema="schema2"):
-    schema = SchemaBase.parse(path_to_swinstalled_file(schema))
+    schema = SchemaCommon.parse(path_to_swinstalled_file(schema))
     if action == "install":
         if schema.schema_version == "1":
             schema.insert_element(datetime.now())
