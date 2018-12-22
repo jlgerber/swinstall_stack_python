@@ -1,16 +1,37 @@
 
+"""
+file_metadata.py
+
+Implementation of FileMetadata for Schema1.
+"""
+import os
+from datetime import datetime
+import xml.etree.ElementTree as ET
+from ..base.file_metadata import FileMetadataBase
+from ...constants import ELEM
+from ...utils import datetime_from_str, datetime_to_str
+
 __all__ = ("FileMetadata",)
 
-import os
-import xml.etree.ElementTree as ET
-from ...constants import (DATETIME_FORMAT, ELEM)
-from ...utils import datetime_from_str, datetime_to_str
-from datetime import datetime
-from ..base.file_metadata import FileMetadataBase
-
 class FileMetadata(FileMetadataBase):
-
+    """
+    Tracks metadata describing specific swinstalled file, gleaned from the
+    swinstall_log.
+    """
     def __init__(self, path, is_current, version, revision=None):
+        """
+        Initialize FileMetadata
+
+        :param path: Path to specific version of swinstalled file within the
+        bak repo
+        :type path: str
+        :param is_current: Whether the file is current or not
+        :type is_current: str
+        :param version: The version of the record
+        :type version: str in form YYYMMDD-HHMMSS
+        :param revision: The vcs revision id
+        :type revision: str or None
+        """
         self._path = path
         self._is_current = is_current
         self._version = version
@@ -18,12 +39,6 @@ class FileMetadata(FileMetadataBase):
         assert isinstance(version, datetime), "version must be of type datetime, not {}"\
                                                 .format(version.__class__.__name__)
         super(FileMetadata, self).__init__()
-        # get a tuple containing the datetime and optionally the revision
-        #datetime_revision = self._extract_datetime_and_revision(version)
-        #self._version = datetime_revision[0]
-        #if datetime_revision[1] and revision and (datetime_revision[1] != revision):
-        #    raise ValueError("revision passed in explicitly does not match revision on datetime string")
-        #self._revision = datetime_revision[1] or revision
 
     @classmethod
     def init_from_version_str(cls, path, is_current, version):
@@ -45,12 +60,12 @@ class FileMetadata(FileMetadataBase):
 
     def __str__(self):
         return "FileMetadata <is_current:{} version:{} >"\
-        .format(self.is_current,  self.version)
+        .format(self.is_current, self.version)
 
 
     def __repr__(self):
         return "FileMetadata <path: {} is_current:{} version:{} >"\
-        .format(self.path,  self.is_current,  self.version)
+        .format(self.path, self.is_current, self.version)
 
     @staticmethod
     def _extract_datetime_and_revision(date_time):
@@ -74,7 +89,8 @@ class FileMetadata(FileMetadataBase):
                 date_time = datetime_from_str(pieces.pop())
                 return (date_time, revision)
             return (datetime_from_str(date_time), None)
-        raise TypeError("Wrong type for date_time: {}. should be string or datetime".format(date_time.__class__.__name__))
+        raise TypeError("Wrong type for date_time: {}. should be string or datetime"\
+            .format(date_time.__class__.__name__))
 
     @property
     def versionless_path(self):
@@ -92,6 +108,7 @@ class FileMetadata(FileMetadataBase):
         :rtype:  ElementTree.Element
         """
         def to_version():
+            """convert to version string"""
             version = datetime_to_str(self.version)
             if self.revision != None:
                 version = "{}_{}".format(version, self.revision)
@@ -106,25 +123,29 @@ class FileMetadata(FileMetadataBase):
 
     @property
     def is_current(self):
+        """read only property"""
         return self._is_current
 
     @property
     def version(self):
+        """read only property"""
         return self._version
 
     @property
     def revision(self):
+        """read only property"""
         return self._revision
 
     @property
     def path(self):
+        """read only property"""
         return self._path
 
     def __eq__(self, other):
         if self.path == other.path and \
         self.version == other.version and \
         self.revision == other.revision and \
-        self.is_current == other.is_current :
+        self.is_current == other.is_current:
             return True
         return False
 
