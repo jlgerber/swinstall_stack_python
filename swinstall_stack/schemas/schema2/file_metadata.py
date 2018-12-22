@@ -100,11 +100,15 @@ class FileMetadata(FileMetadataBase):
     @property
     def versionless_path(self):
         """read only property"""
-        return os.path.basename(
+        versionless_path_dir = self.path.split("bak")[0]
+
+        versionless_file = os.path.basename(
             os.path.dirname(
                 self.path
             )
         )
+        return "{}{}".format(os.path.sep, os.path.join(versionless_path_dir, versionless_file))
+
 
     @property
     def action(self):

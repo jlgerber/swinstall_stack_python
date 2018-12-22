@@ -18,7 +18,9 @@ STACK='''<?xml version="1.0" encoding="UTF-8"?>
 </stack_history>
 '''
 
-class TestFileMetadata(unittest.TestCase):
+class TestFileMetadataWithSwinstallStackFile(unittest.TestCase):
+    """These tests require swisntall_stack file to exist so we build one
+    in setUp and tear it down afterwards in (you guessed it) tearDown"""
     def setUp(self):
         tmpdir = tempfile.mkdtemp()
         self.versionless_file = os.path.join(tmpdir, "packages.xml")
@@ -47,6 +49,39 @@ class TestFileMetadata(unittest.TestCase):
         version_path = os.path.join(self.fullpath, "packages.xml_2")
         metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
         self.assertFalse(metadata.is_current())
+
+
+class TestFileMetadata(unittest.TestCase):
+
+    def setUp(self):
+        self.fullpath = os.path.join("dd","facility","etc", "bak", "packages.xml")
+
+    def test_path_prop(self):
+        version_path = os.path.join(self.fullpath, "packages.xml_2")
+        metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
+        self.assertEqual(metadata.path, version_path)
+
+    def test_versionlesspath_prop(self):
+        version_path = os.path.join(self.fullpath, "packages.xml_2")
+        metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
+        versionless_path = "/dd/facility/etc/packages.xml"
+        self.assertEqual(metadata.versionless_path, versionless_path)
+
+    def test_action_prop(self):
+        version_path = os.path.join(self.fullpath, "packages.xml_2")
+        metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
+        self.assertEqual(metadata.action, "install")
+
+    def test_version_prop(self):
+        version_path = os.path.join(self.fullpath, "packages.xml_2")
+        metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
+        self.assertEqual(metadata.version, 2)
+
+
+    def test_date_time_prop(self):
+        version_path = os.path.join(self.fullpath, "packages.xml_2")
+        metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
+        self.assertEqual(metadata.date_time, datetime_from_str("20180101-103813"))
 
 if __name__ == '__main__':
     unittest.main()
