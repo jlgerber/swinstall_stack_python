@@ -7,14 +7,14 @@ import os
 
 import xml.etree.ElementTree as ET
 
-from ..base import SchemaBase, SchemaInterface
+from ..base import SchemaCommon, SchemaBase
 from ...constants import ELEM
 from .file_metadata import FileMetadata
 from ...utils import datetime_from_str
 
 log = logging.getLogger(__name__)
 
-class Schema2(SchemaBase, SchemaInterface):
+class Schema2(SchemaCommon, SchemaBase):
     schema_version = "2"
 
     _action = "action"
@@ -129,4 +129,4 @@ class Schema2(SchemaBase, SchemaInterface):
         raise LookupError("unable to find version of {} installed on or before {}".format(basename, date_time))
 
 
-SchemaBase.register(Schema2)
+SchemaCommon.register(Schema2)

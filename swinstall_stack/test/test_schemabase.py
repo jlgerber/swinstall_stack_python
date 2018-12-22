@@ -5,7 +5,7 @@ import os
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
-from swinstall_stack.schemas.base import SchemaBase
+from swinstall_stack.schemas.base import SchemaCommon
 from swinstall_stack.utils import datetime_from_str
 from swinstall_stack.constants import DEFAULT_SCHEMA, ELEM
 """
@@ -33,8 +33,8 @@ class SchemaBaseTest(unittest.TestCase):
         tree = ET.parse(self.schemas)
         root = tree.getroot()
         # we do this so that we dont raise an exception when instantiating
-        SchemaBase.schema_version = DEFAULT_SCHEMA
-        self.base = SchemaBase(root)
+        SchemaCommon.schema_version = DEFAULT_SCHEMA
+        self.base = SchemaCommon(root)
 
     def tearDown(self):
         os.remove(self.schemas)
@@ -52,9 +52,9 @@ class SchemaBaseTest(unittest.TestCase):
         self.assertEqual(versionless, expect)
 
     def test_swinstall_stack_prop(self):
-        schemas = self.base.schemas
+        swinstall_stack = self.base.swinstall_stack
         expect = "/dd/facility/etc/bak/packages.xml/packages.xml_swinstall_stack"
-        self.assertEqual(schemas, expect)
+        self.assertEqual(swinstall_stack, expect)
 
     def test_root_prop(self):
         root = self.base.root

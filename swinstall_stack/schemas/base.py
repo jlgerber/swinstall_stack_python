@@ -1,4 +1,4 @@
-__all__ = ("SchemaBase", "SchemaInterface")
+__all__ = ("SchemaCommon", "SchemaBase")
 
 import logging
 import os
@@ -8,7 +8,7 @@ from  ..constants import DEFAULT_SCHEMA
 
 log = logging.getLogger(__name__)
 
-class SchemaBase(object):
+class SchemaCommon(object):
     """Base class providing schema registry, as well as callable methods.
     """
     schema_version = None
@@ -22,7 +22,7 @@ class SchemaBase(object):
 
         :param schema: class to register. This classmethod uses the subclass's
                        schma_version class variable as the key in the registry.
-        :type schema: SchemaBase subclass
+        :type schema: SchemaCommon subclass
         """
         cls.registry[schema.schema_version] = schema
 
@@ -47,13 +47,13 @@ class SchemaBase(object):
         """Given the full path to a versionless swinstalled file, locate the swinstall
         stack and parse the stack to determine the schema version. then,
         invoke the approprate subclass parsing method, returning an initialized
-        subclass of SchemaBase.
+        subclass of SchemaCommon.
 
         :param swinstalled_file: fullpath to swinstalled file
         :type swinstalled_file: str
 
-        :returns: SchemaBase subclass instance
-        :rtype: SchemaBase subclass
+        :returns: SchemaCommon subclass instance
+        :rtype: SchemaCommon subclass
 
         :raises: ValueError if unable to identify schema version
         """
@@ -125,10 +125,10 @@ class SchemaBase(object):
             .format(root_schema_version, self.__class__.__name__, self.__class__.schema_version))
 
     @property
-    def schemas(self):
-        """The full path to the schemas file.
+    def swinstall_stack(self):
+        """The full path to the swinstall_stack file.
 
-        :returns: full path to schemas file
+        :returns: full path to swinstall_stack file
         :rtype: str
         """
         return self._swinstall_stack
@@ -143,7 +143,7 @@ class SchemaBase(object):
         return self._root
 
 
-class SchemaInterface(object):
+class SchemaBase(object):
     """abstract class providing minimum set of methods defining the schema interface"""
     def current(self):
         """Return metadata corresponding with the current file in the swinstall stack.
