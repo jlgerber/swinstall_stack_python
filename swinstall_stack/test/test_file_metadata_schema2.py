@@ -43,5 +43,10 @@ class TestFileMetadata(unittest.TestCase):
         metadata = FileMetadata(version_path, "install", "3", "20180702-144204", "194f835569a79ba433" )
         self.assertTrue(metadata.is_current())
 
+    def test_is_current_false(self):
+        version_path = os.path.join(self.fullpath, "packages.xml_2")
+        metadata = FileMetadata(version_path, "install", "2", "20180101-103813", "c94f6266789a483a43" )
+        self.assertFalse(metadata.is_current())
+
 if __name__ == '__main__':
     unittest.main()
