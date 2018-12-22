@@ -7,7 +7,7 @@ import os
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
-from ..base import SchemaCommon, SchemaBase
+from ..base.schema import SchemaCommon, SchemaBase
 from ...constants import (ELEM, DEFAULT_SCHEMA)
 from .file_metadata import FileMetadata
 from ...utils import (datetime_from_str, datetime_revision_from_str, datetime_to_str)

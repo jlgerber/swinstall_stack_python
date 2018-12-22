@@ -5,11 +5,9 @@ import os
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
-from swinstall_stack.schemas.base import SchemaCommon
+from swinstall_stack.schemas.base.schema import SchemaCommon
 from swinstall_stack.utils import datetime_from_str
 from swinstall_stack.constants import DEFAULT_SCHEMA, ELEM
-"""
-"""
 
 STACK='''<stack_history path="/dd/facility/etc/bak/packages.xml/packages.xml_swinstall_stack">
     <elt is_current="False" version="20161213-093146_r575055" />

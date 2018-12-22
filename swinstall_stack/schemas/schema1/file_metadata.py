@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 from ...utils import datetime_from_str, datetime_to_str
 from datetime import datetime
-from ..file_metadata_base import FileMetadataBase
+from ..base.file_metadata import FileMetadataBase
 
 class FileMetadata(FileMetadataBase):
     def __init__(self, path, is_current, version, revision=None):

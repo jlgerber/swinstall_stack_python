@@ -7,7 +7,7 @@ import os
 
 import xml.etree.ElementTree as ET
 
-from ..base import SchemaCommon, SchemaBase
+from ..base.schema import SchemaCommon, SchemaBase
 from ...constants import ELEM
 from .file_metadata import FileMetadata
 from ...utils import datetime_from_str

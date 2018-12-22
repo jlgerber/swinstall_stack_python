@@ -4,7 +4,7 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
-from  ..constants import DEFAULT_SCHEMA
+from ...constants import DEFAULT_SCHEMA
 
 log = logging.getLogger(__name__)
 

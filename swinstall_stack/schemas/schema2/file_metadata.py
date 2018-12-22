@@ -6,7 +6,7 @@ import os
 import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 from ...utils import datetime_from_str, datetime_to_str
-from ..file_metadata_base import FileMetadataBase
+from ..base.file_metadata import FileMetadataBase
 class FileMetadata(FileMetadataBase):
     """Class which tracks metadata associated with an swinstalled file."""
 
