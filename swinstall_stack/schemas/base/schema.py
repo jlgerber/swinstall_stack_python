@@ -1,4 +1,8 @@
-__all__ = ("SchemaCommon", "SchemaBase")
+"""
+schema.py
+
+base classes for swinstall stack schemas
+"""
 
 import logging
 import os
@@ -6,7 +10,9 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from ...constants import DEFAULT_SCHEMA
 
-log = logging.getLogger(__name__)
+__all__ = ("SchemaCommon", "SchemaBase")
+
+LOG = logging.getLogger(__name__)
 
 class SchemaCommon(object):
     """Base class providing schema registry, as well as callable methods.
@@ -88,7 +94,7 @@ class SchemaCommon(object):
         """
         fullpath = self.root.attrib.get("path")
         #assert fullpath != None, "root attrib path is None"
-        dirname =  os.path.dirname(fullpath)
+        dirname = os.path.dirname(fullpath)
         #assert dirname != None, "root dirname is None"
         return dirname
 
@@ -101,12 +107,13 @@ class SchemaCommon(object):
         return os.path.basename(self.root_dirname())
 
     def _save(self):
-        xmlstr = minidom.parseString(ET.tostring(self.root)).toprettyxml(indent="   ", encoding='UTF-8')
+        xmlstr = minidom.parseString(ET.tostring(self.root))\
+            .toprettyxml(indent="   ", encoding='UTF-8')
         xmlstr = os.linesep.join([s for s in xmlstr.splitlines() if s.strip()])
         output = self.root.attrib.get("path")
-        log.debug("outputing to {}".format(output))
-        with open(output, "w") as f:
-            f.write(xmlstr)
+        LOG.debug("outputing to %s", output)
+        with open(output, "w") as filehandle:
+            filehandle.write(xmlstr)
 
     def _validate_schema_version(self, root):
         """Validate the schema version of the calling class against the schema version
