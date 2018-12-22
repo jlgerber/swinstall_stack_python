@@ -1,5 +1,9 @@
 
-__all__ = ("Schema1",)
+"""
+schema1.__init__.py
+
+Implements Schema1
+"""
 
 from datetime import datetime
 import logging
@@ -12,9 +16,13 @@ from ...constants import (ELEM, DEFAULT_SCHEMA)
 from .file_metadata import FileMetadata
 from ...utils import (datetime_from_str, datetime_revision_from_str, datetime_to_str)
 
-log = logging.getLogger(__name__)
+__all__ = ("Schema1",)
+
+LOG = logging.getLogger(__name__)
 
 class Schema1(SchemaCommon, SchemaBase):
+    """Manipulate swinstall_stack with schema version 1
+    """
     schema_version = DEFAULT_SCHEMA
 
     _action = "action"
@@ -34,7 +42,7 @@ class Schema1(SchemaCommon, SchemaBase):
         for elt in self.root:
             if elt.attrib.get("is_current") == "True":
                 date_time, revision = datetime_revision_from_str(elt.attrib.get("version"))
-                versioned_filepath = self._versioned_file( date_time, revision)
+                versioned_filepath = self._versioned_file(date_time, revision)
                 return FileMetadata.init_from_version_str(versioned_filepath, **elt.attrib)
 
         raise ValueError("Unable to find current")
@@ -77,7 +85,7 @@ class Schema1(SchemaCommon, SchemaBase):
             if date_time == version:
                 versioned_filepath = self._versioned_file(date_time, revision)
                 return FileMetadata.init_from_version_str(versioned_filepath, **elt.attrib)
-        raise KeyError("no version: {} has been published",format(version))
+        raise KeyError("no version: {} has been published".format(version))
 
     def file_on(self, date_time):
         """Retrieve the versioned file corresponding to the specified date.
@@ -131,27 +139,41 @@ class Schema1(SchemaCommon, SchemaBase):
         revision = "" if revision_str is None else "_{}".format(revision_str)
         date_time = datetime_to_str(date_time) if isinstance(date_time, datetime) else date_time
         return os.path.join(self.root_dirname(),
-                "{}_{}{}".format(self.versionless_filename(), date_time, revision))
+                            "{}_{}{}".format(self.versionless_filename(),
+                                             date_time,
+                                             revision))
 
     def _insert_element_into_root(self, element):
         for child in self.root:
             if child.attrib.get("is_current") == "True":
                 child.attrib['is_current'] = "False"
         self.root.append(element)
-        log.debug("Added child: {} to root: {}".format(element.attrib, self.root.attrib))
+        LOG.debug("Added child: %s to root: %s", element.attrib, self.root.attrib)
         self._save()
 
-    def insert_element(self, date_time, revision=None):
+    def _insert_element_process_args(self, date_time, revision=None):
+        """
+        Insert a new element with the supplied properties.
+        :param date_time: that the new element was created
+        :type date_time: datetime
+        :param revision: optional revision id from VCS.
+        :type revision: str
+        """
+        LOG.debug("insert_element datetime:%s revision:%s", date_time, revision)
+        next_file = FileMetadata(self._versioned_file(date_time, revision),
+                                 "True", date_time, revision)
+        self._insert_element_into_root(next_file.element())
+
+    def insert_element(self, *args, **kwargs):
         """Insert a new element with the supplied properties.
+        accepts args / kwargs, which should map to the following:
 
         :param date_time: that the new element was created
         :type date_time: datetime
         :param revision: optional revision id from VCS.
         :type revision: str
         """
-        log.debug("insert_element datetime:{} revision:{}".format(date_time, revision))
-        next = FileMetadata(self._versioned_file(date_time, revision), "True", date_time, revision)
-        self._insert_element_into_root(next.element())
+        self._insert_element_process_args(*args, **kwargs)
 
     def rollback_element(self, date_time=datetime.now()):
         """Rollback the current entry to point at the previous entry.
@@ -172,7 +194,7 @@ class Schema1(SchemaCommon, SchemaBase):
                     raise IndexError("Attempt to roll back before start")
                 list(self.root)[lookup].attrib["is_current"] = "True"
                 break
-            cnt +=1
+            cnt += 1
         self._save()
 
 SchemaCommon.register(Schema1)
