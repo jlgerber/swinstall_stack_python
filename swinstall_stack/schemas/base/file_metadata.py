@@ -1,6 +1,14 @@
+"""
+file_metadata.py
+
+FileMetadata base class
+"""
 __all__ = ("FileMetadataBase",)
 
 class FileMetadataBase(object):
+    """Base class for FileMetadata, defining required
+    methods and properties which need to be implemented.
+    """
     def element(self):
         """construct an element from self
 
@@ -36,8 +44,12 @@ class FileMetadataBase(object):
         :rtype: str
         """
         raise NotImplementedError()
+
     @property
     def path(self):
+        """Return the full path to the versioned file associated with
+        the metadata.
+        """
         raise NotImplementedError()
 
     def __eq__(self, other):
@@ -45,3 +57,4 @@ class FileMetadataBase(object):
 
     def __ne__(self, other):
         raise NotImplementedError()
+
