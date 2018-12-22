@@ -65,7 +65,6 @@ class Schema1Test(unittest.TestCase):
             "20180702-144204")
         self.assertNotEqual(current, expected)
 
-
     def test_current_version(self):
 
         answer = self.schema.current_version()
@@ -160,7 +159,7 @@ class Schema1Test(unittest.TestCase):
         file_on = self.schema.file_on(test_datetime)
 
         expect = os.path.join(self.fullpath, "packages.xml_20181105-103813")
-        self.assertEqual(file_on.fullpath(), expect)
+        self.assertEqual(file_on.path, expect)
 
     def test_file_on_str(self):
         """The previous test should also work by supplying a string in the appropriate
@@ -170,7 +169,7 @@ class Schema1Test(unittest.TestCase):
         file_on = self.schema.file_on(test_datetime)
 
         expect = os.path.join(self.fullpath, "packages.xml_20181105-103813")
-        self.assertEqual(file_on.fullpath(), expect)
+        self.assertEqual(file_on.path, expect)
 
     def test_file_on_str_inbetween(self):
         """Test a timestamp that is inbetween the current timestamp and the previous
@@ -180,7 +179,7 @@ class Schema1Test(unittest.TestCase):
         file_on = self.schema.file_on(test_datetime)
 
         expect = os.path.join(self.fullpath, "packages.xml_20181102-144204")
-        self.assertEqual(file_on.fullpath(), expect)
+        self.assertEqual(file_on.path, expect)
 
     def test_file_on_nomatch(self):
         with self.assertRaises(LookupError):

@@ -43,8 +43,6 @@ class Schema2Test(unittest.TestCase):
         Schema2.parse(self.versionless_file)
 
     def test_current(self):
-        """current returns a FileMetadata instance with the current element's
-        data"""
         current = self.schema.current()
         expected = FileMetadata(self.schema._versioned_file("3"),
                                  "install",
@@ -136,14 +134,14 @@ class Schema2Test(unittest.TestCase):
             self.schema.rollback_element()
 
     def test_file_on(self):
-        """provide the current timestamp and make sure that we get back the
-        current FileMetadata instance"""
+        # provide the current timestamp and make sure that we get back the
+        # current FileMetadata instance
         test_datetime = datetime_from_str("20180702-144204")
 
         file_on = self.schema.file_on(test_datetime)
 
         expect = os.path.join(self.fullpath, "packages.xml_3")
-        self.assertEqual(file_on.fullpath(), expect)
+        self.assertEqual(file_on.path, expect)
 
     def test_file_on_str(self):
         """The previous test should also work by supplying a string in the appropriate
@@ -153,7 +151,7 @@ class Schema2Test(unittest.TestCase):
         file_on = self.schema.file_on(test_datetime)
 
         expect = os.path.join(self.fullpath, "packages.xml_3")
-        self.assertEqual(file_on.fullpath(), expect)
+        self.assertEqual(file_on.path, expect)
 
     def test_file_on_str_inbetween(self):
         """Test a timestamp that is inbetween the current timestamp and the previous
@@ -163,7 +161,7 @@ class Schema2Test(unittest.TestCase):
         file_on = self.schema.file_on(test_datetime)
 
         expect = os.path.join(self.fullpath, "packages.xml_2")
-        self.assertEqual(file_on.fullpath(), expect)
+        self.assertEqual(file_on.path, expect)
 
     def test_file_on_nomatch(self):
         with self.assertRaises(LookupError):
