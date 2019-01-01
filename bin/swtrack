@@ -12,7 +12,7 @@ def add_src_to_syspath():
 from datetime import datetime
 add_src_to_syspath()
 
-from swinstall_stack.schemas.base import SchemaCommon
+from swinstall_stack.schemas.base.schema import SchemaCommon
 from swinstall_stack.schemas import *
 #from swinstall_stack.schemas.schema2 import Schema2
 #from swinstall_stack.schemas.schema1 import Schema1
