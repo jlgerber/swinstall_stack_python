@@ -23,21 +23,28 @@ import logging
 
 LOG_LEVEL = logging.DEBUG
 LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
-from colorlog import ColoredFormatter
 logging.getLogger().setLevel(LOG_LEVEL)
-formatter = ColoredFormatter(LOGFORMAT,log_colors={
+stream = None
+try:
+    from colorlog import ColoredFormatter
+
+    formatter = ColoredFormatter(LOGFORMAT,log_colors={
                 'DEBUG':    'cyan',
                 'INFO':     'green',
                 'WARNING':  'yellow',
                 'ERROR':    'red',
                 'CRITICAL': 'red',
         })
-stream = logging.StreamHandler()
-stream.setLevel(LOG_LEVEL)
-stream.setFormatter(formatter)
+    stream = logging.StreamHandler()
+    stream.setLevel(LOG_LEVEL)
+    stream.setFormatter(formatter)
+except ImportError:
+    logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
+
 log = logging.getLogger()
 log.setLevel(LOG_LEVEL)
-log.addHandler(stream)
+if stream:
+    log.addHandler(stream)
 
 
 # Register schemas
