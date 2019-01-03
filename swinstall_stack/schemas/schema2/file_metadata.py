@@ -12,14 +12,13 @@ import xml.etree.ElementTree as ET
 from ...constants import (DATETIME_FORMAT, ELEM)
 from ...utils import datetime_from_str
 from ..base.file_metadata import FileMetadataBase
-from ..schema2 import Schema2
 
 __all__ = ("FileMetadata",)
 
 class FileMetadata(FileMetadataBase):
     """Class which tracks metadata associated with an swinstalled file."""
 
-    def __init__(self, path, action, version, datetime_val, hash_str, revision=None):
+    def __init__(self, path, action, version, datetime, hash, revision=None):
         """Initialize an instance of FileMetadata with metadata.
 
         :param path: path to versioned file
@@ -39,8 +38,8 @@ class FileMetadata(FileMetadataBase):
         self._path = path
         self._action = action
         self._version = int(version)
-        self._datetime = self._set_datetime(datetime_val)
-        self._hash = hash_str
+        self._datetime = self._set_datetime(datetime)
+        self._hash = hash
         self._revision = revision
 
         super(FileMetadata, self).__init__()
@@ -86,10 +85,12 @@ class FileMetadata(FileMetadataBase):
         """Test to see if the metadata points at a current
         entry in the swinstall_log
         """
+        from swinstall_stack.manager import SwinstallStackMgr
+        mgr = SwinstallStackMgr()
         # get the path to the versionless file
         base_path = self.path.split("bak")[0]
         base_path = os.path.join(base_path, self.versionless_path)
-        schema = Schema2.parse(base_path)
+        schema = mgr.parse(base_path)
         current = schema.current()
         return self == current
 

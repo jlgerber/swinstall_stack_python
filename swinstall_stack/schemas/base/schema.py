@@ -15,73 +15,18 @@ __all__ = ("SchemaCommon", "SchemaBase")
 LOG = logging.getLogger(__name__)
 
 class SchemaCommon(object):
-    """Base class providing schema registry, as well as callable methods.
+    """Superclass with common methods.
     """
     schema_version = None
-    registry = {}
 
-    @classmethod
-    def register(cls, schema):
-        """Register a schema class with the registry, which is used
-        to instantiate the appropriate schema version, supporting multiple
-        schema generations.
-
-        :param schema: class to register. This classmethod uses the subclass's
-                       schma_version class variable as the key in the registry.
-        :type schema: SchemaCommon subclass
-        """
-        cls.registry[schema.schema_version] = schema
-
-    @staticmethod
-    def _swinstall_stack_from_file(swinstalled_file):
-        """given the fullpath to an swinstalled file, construct the
-        full path to the relevant schemas
-
-        :param swinstalled_file: Full path to the swinstalled file
-        :type swinstalled_file: str
-
-        :returns: full path to schemas
-        :rtype: str
-        """
-        file_name = os.path.basename(swinstalled_file)
-        dir_name = os.path.dirname(swinstalled_file)
-        return os.path.join(dir_name, "bak", file_name, \
-                "{}_swinstall_stack".format(file_name))
-
-    @classmethod
-    def parse(cls, swinstalled_file):
-        """Given the full path to a versionless swinstalled file, locate the swinstall
-        stack and parse the stack to determine the schema version. then,
-        invoke the approprate subclass parsing method, returning an initialized
-        subclass of SchemaCommon.
-
-        :param swinstalled_file: fullpath to swinstalled file
-        :type swinstalled_file: str
-
-        :returns: SchemaCommon subclass instance
-        :rtype: SchemaCommon subclass
-
-        :raises: ValueError if unable to identify schema version
-        """
-        tree = ET.parse(cls._swinstall_stack_from_file(swinstalled_file))
-        root = tree.getroot()
-        schema_version = root.attrib.get("schema", DEFAULT_SCHEMA)
-
-        if schema_version:
-            if not cls.registry.has_key(schema_version):
-                raise KeyError("Schema registry missing schema version: {}. Registered versions:{}"\
-                .format(schema_version, cls.registry.keys()))
-            return cls.registry.get(schema_version)(root)
-
-        raise ValueError("Root xml element does not have schema attribute")
-
-    def __init__(self, root):
+    def __init__(self, root, start_time):
         """Initialize the BaseSchema class, validating the schema_version registered
         on the parent class against the schema version declared in the root xml element.
 
         :param root: Root xml Element of class ElementTree.Node
         :type root: ElementTree.Element
         """
+        self._start_time = start_time
         self._validate_schema_version(root)
         self._root = root
         self._swinstall_stack = root.attrib.get("path")
@@ -107,6 +52,8 @@ class SchemaCommon(object):
         return os.path.basename(self.root_dirname())
 
     def _save(self):
+        # TODO - validate that file modification time < self.start_time or raise RuntimeError
+
         xmlstr = minidom.parseString(ET.tostring(self.root))\
             .toprettyxml(indent="   ", encoding='UTF-8')
         xmlstr = os.linesep.join([s for s in xmlstr.splitlines() if s.strip()])
@@ -151,7 +98,7 @@ class SchemaCommon(object):
 
 
 class SchemaBase(object):
-    """abstract class providing minimum set of methods defining the schema interface"""
+    """abstract class providing set of methods defining the schema interface"""
     def current(self):
         """Return metadata corresponding with the current file in the swinstall stack.
         """

@@ -10,7 +10,7 @@ import logging
 import os
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
-
+from swinstall_stack.manager import SwinstallStackMgr
 from ..base.schema import SchemaCommon, SchemaBase
 from ...constants import (ELEM, DEFAULT_SCHEMA)
 from .file_metadata import FileMetadata
@@ -29,12 +29,12 @@ class Schema1(SchemaCommon, SchemaBase):
     _install = "install"
     _version = "version"
 
-    def __init__(self, root):
+    def __init__(self, root, start_time):
         """Initialize Schema1 with the root element of the schemas xml tree.
 
         :param root: root element of document.
         :type root: ElementTree.Element"""
-        super(Schema1, self).__init__(root)
+        super(Schema1, self).__init__(root, start_time)
 
     def current(self):
         """Return metadata corresponding with the current file in the swinstall stack.
@@ -197,4 +197,4 @@ class Schema1(SchemaCommon, SchemaBase):
             cnt += 1
         self._save()
 
-SchemaCommon.register(Schema1)
+SwinstallStackMgr.register(Schema1)

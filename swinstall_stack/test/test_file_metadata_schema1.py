@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from datetime import date, time, datetime
 import xml.etree.ElementTree as ET
-from swinstall_stack.schemas.schema1 import FileMetadata
+from swinstall_stack.schemas.schema1.file_metadata import FileMetadata
 from swinstall_stack.utils import datetime_from_str
 from swinstall_stack.constants import DEFAULT_SCHEMA, ELEM
 
