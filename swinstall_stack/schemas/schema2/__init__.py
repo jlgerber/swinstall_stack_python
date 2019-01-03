@@ -9,6 +9,7 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 
+from ...manager import SwinstallStackMgr
 from ..base.schema import SchemaCommon, SchemaBase
 from ...constants import ELEM
 from .file_metadata import FileMetadata
@@ -27,13 +28,13 @@ class Schema2(SchemaCommon, SchemaBase):
     _install = "install"
     _version = "version"
 
-    def __init__(self, root):
+    def __init__(self, root, start_time):
         """Initialize Schema2 with the root element of the schemas xml tree.
 
         :param root: root element of document.
         :type root: ElementTree.Element
         """
-        super(Schema2, self).__init__(root)
+        super(Schema2, self).__init__(root, start_time)
 
     def _versioned_file(self, version):
 
@@ -93,12 +94,14 @@ class Schema2(SchemaCommon, SchemaBase):
         self.root.insert(0, element)
         self._save()
 
-    def _insert_element(self, hash_str, date_time=datetime.now(), revision=None):
+    # TODO: hash redefines a builtin. Todo: change name of xml key
+    # TODO: datetime shadows datetime module name. change name in xml and here
+    def _insert_element(self, hash, datetime=datetime.now(), revision=None):
         """Generate a new element from a given date_time object.
 
-        :param hash_str: (str) Hash of file contents.
-        :type hash_str: str
-        :param date_time: optional instance of datetime class.
+        :param hash: (str) Hash of file contents.
+        :type hash: str
+        :param date_time: (datetime) optional instance of datetime class.
                           Will generate datetime for current date and time
                           if none is supplied
         :type date_time: datetime
@@ -108,8 +111,8 @@ class Schema2(SchemaCommon, SchemaBase):
         hash_elem = FileMetadata(self._versioned_file(next_version),
                                  "install",
                                  next_version,
-                                 date_time,
-                                 hash_str,
+                                 datetime,
+                                 hash,
                                  revision)
         self._insert_element_into_root(hash_elem.element())
 
@@ -169,4 +172,4 @@ class Schema2(SchemaCommon, SchemaBase):
                           .format(basename, date_time))
 
 
-SchemaCommon.register(Schema2)
+SwinstallStackMgr.register(Schema2)

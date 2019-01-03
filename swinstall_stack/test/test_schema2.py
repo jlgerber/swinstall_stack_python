@@ -1,6 +1,7 @@
 #initialize testing environment
 import env
 # library imports
+from datetime import datetime
 import os
 import tempfile
 import unittest
@@ -31,16 +32,12 @@ class Schema2Test(unittest.TestCase):
 
         tree = ET.parse(self.schemas)
         root = tree.getroot()
-        self.schema = Schema2(root)
+        self.schema = Schema2(root, datetime.now())
 
     def tearDown(self):
         os.remove(self.schemas)
         os.rmdir(self.fullpath)
         del self.schema
-
-    def test_parse(self):
-        # we assert that this will not raise an exception
-        Schema2.parse(self.versionless_file)
 
     def test_current(self):
         current = self.schema.current()

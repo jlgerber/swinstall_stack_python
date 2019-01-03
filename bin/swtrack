@@ -12,22 +12,22 @@ def add_src_to_syspath():
 from datetime import datetime
 add_src_to_syspath()
 
-from swinstall_stack.schemas.base.schema import SchemaCommon
-from swinstall_stack.schemas import *
-#from swinstall_stack.schemas.schema2 import Schema2
-#from swinstall_stack.schemas.schema1 import Schema1
+from swinstall_stack.manager import SwinstallStackMgr
+#from swinstall_stack.schemas.base.schema import SchemaCommon
+from swinstall_stack.schemas import import_schemas
+import_schemas()
 
 import logging
 #logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
 #logging.getLogger().setLevel(logging.DEBUG)
 
 LOG_LEVEL = logging.DEBUG
-LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
-logging.getLogger().setLevel(LOG_LEVEL)
-stream = None
+log = logging.getLogger()
+log.setLevel(LOG_LEVEL)
+#logging.getLogger().setLevel(LOG_LEVEL)
 try:
     from colorlog import ColoredFormatter
-
+    LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
     formatter = ColoredFormatter(LOGFORMAT,log_colors={
                 'DEBUG':    'cyan',
                 'INFO':     'green',
@@ -38,17 +38,9 @@ try:
     stream = logging.StreamHandler()
     stream.setLevel(LOG_LEVEL)
     stream.setFormatter(formatter)
+    log.addHandler(stream)
 except ImportError:
     logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
-
-log = logging.getLogger()
-log.setLevel(LOG_LEVEL)
-if stream:
-    log.addHandler(stream)
-
-
-# Register schemas
-#SchemaCommon.register(Schema2)
 
 def gen_random_hash():
     import random
@@ -57,7 +49,8 @@ def gen_random_hash():
 
 usage = "usage: swtrack <install|rollback>"
 def parse(action, schema="schema2"):
-    schema = SchemaCommon.parse(path_to_swinstalled_file(schema))
+    mgr = SwinstallStackMgr()
+    schema = mgr.parse(path_to_swinstalled_file(schema))
     if action == "install":
         if schema.schema_version == "1":
             schema.insert_element(datetime.now())

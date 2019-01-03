@@ -1,4 +1,5 @@
 #initialize testing environment
+from datetime import datetime
 import env
 # imports
 import os
@@ -32,7 +33,7 @@ class SchemaBaseTest(unittest.TestCase):
         root = tree.getroot()
         # we do this so that we dont raise an exception when instantiating
         SchemaCommon.schema_version = DEFAULT_SCHEMA
-        self.base = SchemaCommon(root)
+        self.base = SchemaCommon(root, datetime.now())
 
     def tearDown(self):
         os.remove(self.schemas)
