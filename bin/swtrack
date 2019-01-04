@@ -9,22 +9,19 @@ def add_src_to_syspath():
     api_dir = cdu(cdu(real(__file__)))
     sys.path.append(api_dir)
 
+import argparse
 from datetime import datetime
 add_src_to_syspath()
 
 from swinstall_stack.manager import SwinstallStackMgr
-#from swinstall_stack.schemas.base.schema import SchemaCommon
 from swinstall_stack.schemas import import_schemas
 import_schemas()
 
 import logging
-#logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
-#logging.getLogger().setLevel(logging.DEBUG)
 
 LOG_LEVEL = logging.DEBUG
 log = logging.getLogger()
 log.setLevel(LOG_LEVEL)
-#logging.getLogger().setLevel(LOG_LEVEL)
 try:
     from colorlog import ColoredFormatter
     LOGFORMAT = "  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s"
@@ -43,23 +40,24 @@ except ImportError:
     logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
 
 def gen_random_hash():
+    """generate a faux hash
+    """
     import random
     hash = random.getrandbits(128)
     return "%032x" % hash
 
+def setup_parser():
+    """setup argparse and regurn args"""
+    parser = argparse.ArgumentParser(description='parse swinstall_stack')
+    parser.add_argument('action', metavar='ACTION', nargs=1,
+                        help='action to be performed')
+    parser.add_argument('file', metavar='FILE',  nargs=1,
+                        help='swinstall source file')
+    parser.add_argument('path', metavar='DEST', nargs=1,
+                        help='swinstall destination path')
+    return parser.parse_args()
+
 usage = "usage: swtrack <install|rollback>"
-def parse(action, schema="schema2"):
-    mgr = SwinstallStackMgr()
-    schema = mgr.parse(path_to_swinstalled_file(schema))
-    if action == "install":
-        if schema.schema_version == "1":
-            schema.insert_element(datetime.now())
-        elif schema.schema_version == "2":
-            schema.insert_element(hash=gen_random_hash())
-    elif action == "rollback":
-        schema.rollback_element(datetime.now())
-    else:
-        print usage
 
 def path_to_swinstalled_file(schema="schema2"):
     root = os.path.dirname(
@@ -69,10 +67,40 @@ def path_to_swinstalled_file(schema="schema2"):
     )
     return os.path.join(root, "examples", schema, "packages.xml")
 
+def install_action(schema):
+    ver = schema.schema_version
+    if ver == "1":
+        schema.insert_element(datetime.now())
+    elif ver == "2":
+        schema.insert_element(hash=gen_random_hash())
+
+def rollback_action(schema):
+    schema.rollback_element(datetime.now())
+
+def get_current_action(schema):
+    print
+    print schema.current().path
+    print
+
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) < 2:
-        print usage
-    else:
-        schema = sys.argv[2] if len(sys.argv) > 2 else "schema2"
-        parse(sys.argv[1], schema)
+
+    args = setup_parser()
+    versionless_path = os.path.join(
+        os.path.realpath(args.path[0]),
+        os.path.basename(args.file[0])
+    )
+
+    mgr = SwinstallStackMgr()
+    schema = mgr.parse(versionless_path)
+    ver = schema.schema_version
+    args.action = args.action[0]
+    if args.action == "install":
+        install_action(schema)
+    elif args.action == "rollback":
+        rollback_action(schema)
+    elif args.action == "rollforward":
+        print "not implemented"
+    elif args.action == "current":
+        get_current_action(schema)
+
+

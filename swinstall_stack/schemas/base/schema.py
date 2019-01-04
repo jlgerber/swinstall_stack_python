@@ -59,6 +59,15 @@ class SchemaCommon(object):
         xmlstr = os.linesep.join([s for s in xmlstr.splitlines() if s.strip()])
         output = self.root.attrib.get("path")
         LOG.debug("outputing to %s", output)
+        mod_time = int(os.path.getmtime(output))
+        LOG.debug("start time: {}".format(self._start_time))
+        LOG.debug("mod time: {}".format(mod_time))
+        if mod_time > self._start_time:
+            raise RuntimeError("{} modification time: {} later than edit start time: {}",
+                output,
+                mod_time,
+                self._start_time
+            )
         with open(output, "w") as filehandle:
             filehandle.write(xmlstr)
 

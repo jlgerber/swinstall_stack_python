@@ -4,7 +4,8 @@ manager.py
 entrypoint for swinstall stack parsing
 """
 
-from datetime import datetime
+#from datetime import datetime
+import time
 import logging
 import os
 import xml.etree.ElementTree as ET
@@ -71,12 +72,12 @@ class SwinstallStackMgr(object):
         :raises: ValueError if unable to identify schema version
         """
         cls = self.__class__
-        start_time = datetime.now()
+        start_time = int(time.time())
 
         tree = ET.parse(self._swinstall_stack_from_file(swinstalled_file))
         root = tree.getroot()
         schema_version = root.attrib.get("schema", DEFAULT_SCHEMA)
-
+        
         if schema_version:
             if not cls.registry.has_key(schema_version):
                 raise KeyError("Schema registry missing schema version: {}. Registered versions:{}"\
